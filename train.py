@@ -85,7 +85,7 @@ def train() -> None:
         policy="MlpPolicy",
         env=train_env,
         learning_rate=8e-5,
-        n_steps=2048,
+        n_steps=4096,
         batch_size=128,
         n_epochs=10,
         gamma=0.995,
@@ -100,7 +100,7 @@ def train() -> None:
 
     print("Training started...")
     model.learn(
-        total_timesteps=700_000,
+        total_timesteps=1_000_000,
         callback=[eval_callback, checkpoint_callback],
         progress_bar=True,
     )
