@@ -28,7 +28,7 @@ def make_env_with_scenario(scenario: DailyScenario):
         temp_min=20.0,
         temp_max=24.0,
         scenario=scenario,
-        reward_weights=RewardWeights(cost=0.42, comfort=0.38, task=0.20),
+        reward_weights=RewardWeights(cost=0.20, comfort=0.60, task=0.20),
     )
 
 
@@ -51,11 +51,11 @@ def evaluate_rl_agent(scenarios: list[DailyScenario]):
 
     # Modeli yükle — normalizasyon istatistikleri de yükleniyor
     dummy_env = DummyVecEnv([lambda: make_env_with_scenario(scenarios[0])])
-    env = VecNormalize.load("models/vec_normalize.pkl", dummy_env)
+    env = VecNormalize.load("models_comfort_v1/vec_normalize.pkl", dummy_env)
     env.training = False       # normalizasyon istatistikleri güncellenmeyecek
     env.norm_reward = False    # reward normalize edilmeyecek (gerçek değerleri görmek için)
 
-    model = PPO.load("models/best_model/best_model", env=env)
+    model = PPO.load("models_comfort_v1/best_model/best_model", env=env)
 
     # Her episode için toplanacak metrikler
     metrics = {
