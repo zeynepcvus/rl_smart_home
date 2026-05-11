@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
-from environment.devices import DEVICE_TYPE_CONTINUOUS, DEVICE_TYPE_EMPTY, DEVICE_TYPE_SHIFTABLE
+from environment.devices import Device, DEVICE_TYPE_CONTINUOUS, DEVICE_TYPE_EMPTY, DEVICE_TYPE_SHIFTABLE
 from environment.pricing import get_price_category_from_value
 from environment.scenario import DailyScenario, build_daily_scenario
 from environment.slots import SlotManager
@@ -49,6 +50,7 @@ class SmartHomeEnv(gym.Env):
         super().__init__()
 
         self.slot_manager = slot_manager
+        self._base_devices = copy.deepcopy(slot_manager.slots)
         self.temp_min = temp_min
         self.temp_max = temp_max
         self.episode_hours = episode_hours
@@ -91,6 +93,8 @@ class SmartHomeEnv(gym.Env):
         )
 
     def _is_user_awake(self) -> bool:
+        if self.scenario is not None and not self.scenario.user_home:
+            return False
         assert self.scenario is not None
         return self.scenario.awake_start <= self.current_hour < self.scenario.sleep_start
 
@@ -98,10 +102,14 @@ class SmartHomeEnv(gym.Env):
         return self.current_hour >= 18 or self.current_hour < 7
 
     def _lighting_need(self) -> float:
+        if self.scenario is not None and not self.scenario.user_home:
+            return 0.0
         assert self.scenario is not None
         return float(self.scenario.lighting_need_profile[self.current_hour % 24])
 
     def _occupancy(self) -> float:
+        if self.scenario is not None and not self.scenario.user_home:
+            return 0.0
         assert self.scenario is not None
         return float(self.scenario.occupancy_profile[self.current_hour % 24])
 
@@ -110,6 +118,11 @@ class SmartHomeEnv(gym.Env):
 
     def _is_lighting_device(self, device) -> bool:
         return device.device_type == DEVICE_TYPE_CONTINUOUS and device.lighting_sensitive
+
+    def _get_active_comfort_bounds(self) -> tuple[float, float]:
+        if self.scenario is not None and not self.scenario.user_home:
+            return 15.0, 30.0
+        return self.temp_min, self.temp_max
 
     def _get_outdoor_temp_for_hour(self, hour: int) -> float:
         assert self.scenario is not None
@@ -129,6 +142,14 @@ class SmartHomeEnv(gym.Env):
         if seed is not None:
             self._rng = np.random.default_rng(seed)
 
+        # ADIM 1 — slotları base'den yeniden kur
+        for i, device in enumerate(self._base_devices):
+            self.slot_manager.slots[i] = copy.deepcopy(device)
+
+        # ADIM 2 — reset_all()
+        self.slot_manager.reset_all()
+
+        # ADIM 3 — scenario oluştur (mevcut kod)
         scenario = self._fixed_scenario if self._fixed_scenario is not None else build_daily_scenario(self._rng)
         self.scenario = scenario
 
@@ -148,7 +169,12 @@ class SmartHomeEnv(gym.Env):
         self.current_price = float(scenario.price_profile[self.current_hour])
         self.previous_price = self.current_price
 
-        self.slot_manager.reset_all()
+        # ADIM 4 — has_laundry kontrolü
+        if not self.scenario.has_laundry:
+            for i, device in enumerate(self.slot_manager.slots):
+                if device.name == "Washing Machine":
+                    self.slot_manager.slots[i] = Device.empty_slot()
+                    break
 
         return self._get_obs(), self._build_info(last_step_cost=0.0)
 
@@ -282,7 +308,8 @@ class SmartHomeEnv(gym.Env):
 
     def _update_thermal_state(self) -> None:
         hvac_on = any(self._is_hvac_device(d) and d.is_active for d in self.slot_manager.slots)
-        target = (self.temp_min + self.temp_max) / 2.0
+        temp_min, temp_max = self._get_active_comfort_bounds()
+        target = (temp_min + temp_max) / 2.0
 
         if hvac_on:
             thermal_power = sum(
@@ -337,13 +364,14 @@ class SmartHomeEnv(gym.Env):
         cost_reward = -cost
 
         # 2) STEP BAZLI CEZALAR
-        invalid_penalty = -0.20 * self._step_invalid_actions
+        invalid_penalty = -0.50 * self._step_invalid_actions
         switch_penalty = -0.04 * self._step_hvac_switches
 
         # 3) KONFOR
-        target = (self.temp_min + self.temp_max) / 2.0
+        temp_min, temp_max = self._get_active_comfort_bounds()
+        target = (temp_min + temp_max) / 2.0
 
-        if self.temp_min <= self.indoor_temp <= self.temp_max:
+        if temp_min <= self.indoor_temp <= temp_max:
             deviation = abs(self.indoor_temp - target)
             temp_score = 1.2 - min(deviation / 2.5, 0.8)
             temp_ok = True

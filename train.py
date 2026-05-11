@@ -11,7 +11,7 @@ from environment.slots import SlotManager
 from environment.smart_home_env import RewardWeights, SmartHomeEnv
 
 # Model ve log klasörleri
-MODELS_DIR = "models_comfort_v1"
+MODELS_DIR = "models_comfort_v2"
 LOGS_DIR = "logs"
 os.makedirs(MODELS_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
