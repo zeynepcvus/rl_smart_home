@@ -11,7 +11,7 @@ from environment.slots import SlotManager
 from environment.smart_home_env import RewardWeights, SmartHomeEnv
 
 # Model ve log klasörleri
-MODELS_DIR = "models_balanced_dynamic_v6"
+MODELS_DIR = "models_cost_dynamic_v1"
 LOGS_DIR = "logs"
 os.makedirs(MODELS_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
@@ -25,7 +25,7 @@ def make_env(seed: int | None = None):
             slot_manager=slot_manager,
             temp_min=20.0,
             temp_max=24.0,
-            reward_weights=RewardWeights(cost=0.42, comfort=0.38, task=0.20),
+            reward_weights=RewardWeights(cost=0.65, comfort=0.15, task=0.20),
             dynamic_device_training=True,
             seed=seed,
         )
