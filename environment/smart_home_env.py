@@ -163,7 +163,7 @@ class SmartHomeEnv(gym.Env):
             self.slot_manager.slots[0] = create_device_from_preset("HVAC")
             self.slot_manager.slots[1] = create_device_from_preset("Lighting")
 
-            if self._device_rng.random() < 0.40:
+            if self._device_rng.random() < 0.30:
                 # Sabit kombinasyon
                 self.slot_manager.slots[2] = create_device_from_preset("Washing Machine")
                 # slot 3 ve slot 4 empty kalır — zaten boş, dokunma
@@ -180,9 +180,9 @@ class SmartHomeEnv(gym.Env):
                 for slot_index in range(2, 5):
                     roll = self._device_rng.random()
 
-                    if roll < 0.40:
+                    if roll < 0.30:
                         pass  # empty kalır
-                    elif roll < 0.90:
+                    elif roll < 0.70:
                         available = [p for p in SHIFTABLE_PRESETS if p not in used_presets]
                         if available:
                             chosen = self._device_rng.choice(available)
