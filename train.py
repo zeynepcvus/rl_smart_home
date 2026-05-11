@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import os
 
+from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
-from environment.devices import create_device_from_preset
 from environment.slots import SlotManager
 from environment.smart_home_env import RewardWeights, SmartHomeEnv
 
 # Model ve log klasörleri
-MODELS_DIR = "models_comfort_v2"
+MODELS_DIR = "models_balanced_dynamic_v5"
 LOGS_DIR = "logs"
 os.makedirs(MODELS_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
@@ -20,19 +20,13 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 def make_env(seed: int | None = None):
     def _factory():
         slot_manager = SlotManager()
-        slot_manager.add_device(create_device_from_preset("HVAC"))
-        slot_manager.add_device(create_device_from_preset("Washing Machine"))
-        slot_manager.add_device(create_device_from_preset("Lighting"))
 
         return SmartHomeEnv(
             slot_manager=slot_manager,
             temp_min=20.0,
             temp_max=24.0,
-            reward_weights=RewardWeights(
-                cost=0.20,
-                comfort=0.60,
-                task=0.20,
-            ),
+            reward_weights=RewardWeights(cost=0.42, comfort=0.38, task=0.20),
+            dynamic_device_training=True,
             seed=seed,
         )
 
@@ -41,7 +35,7 @@ def make_env(seed: int | None = None):
 
 def train() -> None:
     # Eğitim ortamı
-    train_env = DummyVecEnv([make_env(seed=42)])
+    train_env = SubprocVecEnv([make_env(seed=42+i) for i in range(4)])
     train_env = VecNormalize(
         train_env,
         norm_obs=True,
@@ -100,7 +94,7 @@ def train() -> None:
 
     print("Training started...")
     model.learn(
-        total_timesteps=1_000_000,
+        total_timesteps=1_500_000,
         callback=[eval_callback, checkpoint_callback],
         progress_bar=True,
     )

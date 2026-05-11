@@ -1,13 +1,22 @@
 from __future__ import annotations
 
 import copy
+import random
 from dataclasses import dataclass
 
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
-from environment.devices import Device, DEVICE_TYPE_CONTINUOUS, DEVICE_TYPE_EMPTY, DEVICE_TYPE_SHIFTABLE
+from environment.devices import (
+    Device,
+    DEVICE_TYPE_CONTINUOUS,
+    DEVICE_TYPE_EMPTY,
+    DEVICE_TYPE_SHIFTABLE,
+    ENERGY_CATEGORIES,
+    create_custom_device,
+    create_device_from_preset,
+)
 from environment.pricing import get_price_category_from_value
 from environment.scenario import DailyScenario, build_daily_scenario
 from environment.slots import SlotManager
@@ -45,6 +54,7 @@ class SmartHomeEnv(gym.Env):
         scenario: DailyScenario | None = None,
         reward_weights: RewardWeights | None = None,
         episode_hours: int = 24,
+        dynamic_device_training: bool = False,
         seed: int | None = None,
     ) -> None:
         super().__init__()
@@ -55,8 +65,10 @@ class SmartHomeEnv(gym.Env):
         self.temp_max = temp_max
         self.episode_hours = episode_hours
         self.reward_weights = reward_weights or RewardWeights()
+        self.dynamic_device_training = dynamic_device_training
 
         self._rng = np.random.default_rng(seed)
+        self._device_rng = random.Random(seed)
         self._fixed_scenario = scenario
 
         # Durum değişkenleri — reset() içinde sıfırlanır
@@ -142,14 +154,62 @@ class SmartHomeEnv(gym.Env):
         if seed is not None:
             self._rng = np.random.default_rng(seed)
 
-        # ADIM 1 — slotları base'den yeniden kur
-        for i, device in enumerate(self._base_devices):
-            self.slot_manager.slots[i] = copy.deepcopy(device)
+        if self.dynamic_device_training:
+            # Slotları tamamen sıfırla
+            for i in range(self.slot_manager.max_slots):
+                self.slot_manager.slots[i] = Device.empty_slot()
 
-        # ADIM 2 — reset_all()
-        self.slot_manager.reset_all()
+            # HVAC ve Lighting her zaman slot 0 ve 1
+            self.slot_manager.slots[0] = create_device_from_preset("HVAC")
+            self.slot_manager.slots[1] = create_device_from_preset("Lighting")
 
-        # ADIM 3 — scenario oluştur (mevcut kod)
+            if self._device_rng.random() < 0.40:
+                # Sabit kombinasyon
+                self.slot_manager.slots[2] = create_device_from_preset("Washing Machine")
+                # slot 3 ve slot 4 empty kalır — zaten boş, dokunma
+            else:
+                SHIFTABLE_PRESETS = [
+                    "Washing Machine",
+                    "Dishwasher",
+                    "Tumble Dryer",
+                    "Water Heater",
+                    "EV Charger",
+                ]
+                used_presets: list[str] = []
+
+                for slot_index in range(2, 5):
+                    roll = self._device_rng.random()
+
+                    if roll < 0.40:
+                        pass  # empty kalır
+                    elif roll < 0.90:
+                        available = [p for p in SHIFTABLE_PRESETS if p not in used_presets]
+                        if available:
+                            chosen = self._device_rng.choice(available)
+                            used_presets.append(chosen)
+                            self.slot_manager.slots[slot_index] = create_device_from_preset(chosen)
+                    else:
+                        category = self._device_rng.choice(["A", "B", "C", "D"])
+                        duration = self._device_rng.randint(1, 4)
+                        deadline = self._device_rng.randint(12, 23)
+                        priority = round(self._device_rng.uniform(0.3, 0.9), 2)
+                        self.slot_manager.slots[slot_index] = create_custom_device(
+                            name=f"CustomDevice_{slot_index}",
+                            device_type=DEVICE_TYPE_SHIFTABLE,
+                            power_kw=ENERGY_CATEGORIES[category],
+                            duration=duration,
+                            deadline=deadline,
+                            user_priority=priority,
+                        )
+
+            self._base_devices = copy.deepcopy(self.slot_manager.slots)
+            self.slot_manager.reset_all()
+        else:
+            # Eski akış — _base_devices'tan restore et
+            for i, device in enumerate(self._base_devices):
+                self.slot_manager.slots[i] = copy.deepcopy(device)
+            self.slot_manager.reset_all()
+
         scenario = self._fixed_scenario if self._fixed_scenario is not None else build_daily_scenario(self._rng)
         self.scenario = scenario
 
@@ -168,13 +228,6 @@ class SmartHomeEnv(gym.Env):
 
         self.current_price = float(scenario.price_profile[self.current_hour])
         self.previous_price = self.current_price
-
-        # ADIM 4 — has_laundry kontrolü
-        if not self.scenario.has_laundry:
-            for i, device in enumerate(self.slot_manager.slots):
-                if device.name == "Washing Machine":
-                    self.slot_manager.slots[i] = Device.empty_slot()
-                    break
 
         return self._get_obs(), self._build_info(last_step_cost=0.0)
 
@@ -231,6 +284,7 @@ class SmartHomeEnv(gym.Env):
 
     def step(self, action):
         action = np.asarray(action, dtype=np.int64).reshape(-1)
+        masked_action = list(action)
 
         self._step_hvac_switches = 0
         self._step_invalid_actions = 0
@@ -240,15 +294,16 @@ class SmartHomeEnv(gym.Env):
 
         # 1) AKSİYONLARI UYGULA
         for i, device in enumerate(self.slot_manager.slots):
-            desired = int(action[i])
+            desired = int(masked_action[i])
 
             if device.device_type == DEVICE_TYPE_EMPTY:
-                if desired == 1:
-                    self._step_invalid_actions += 1
-                    self.invalid_action_count += 1
+                masked_action[i] = 0
                 continue
 
             if device.device_type == DEVICE_TYPE_SHIFTABLE:
+                if desired == 1 and (device.is_completed or device.is_active):
+                    masked_action[i] = 0
+                    desired = 0
                 if desired == 1:
                     started = device.start()
                     if not started:
