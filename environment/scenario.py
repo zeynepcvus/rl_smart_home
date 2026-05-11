@@ -33,7 +33,6 @@ class DailyScenario:
     lighting_need_profile: np.ndarray
     price_profile: np.ndarray
     user_home: bool = True
-    has_laundry: bool = True
 
 
 def build_daily_scenario(
@@ -105,7 +104,6 @@ def build_daily_scenario(
     price_profile = build_daily_price_profile(rng, config=price_config)
 
     user_home = bool(rng.random() > 0.20)    # %80 evde
-    has_laundry = bool(rng.random() > 0.30)  # %70 çamaşır var
 
     return DailyScenario(
         daily_temp_base=daily_temp_base,
@@ -117,5 +115,4 @@ def build_daily_scenario(
         lighting_need_profile=lighting_need_profile,
         price_profile=price_profile,
         user_home=user_home,
-        has_laundry=has_laundry,
     )
