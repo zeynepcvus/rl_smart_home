@@ -15,7 +15,7 @@ const MODE_LABELS = {
   comfort: { label: "Konfor Odaklı", icon: "🌡️", color: "#FAC775" },
 };
 
-export default function Summary({ goTo, formData, setApiResult }) {
+export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -56,6 +56,7 @@ export default function Summary({ goTo, formData, setApiResult }) {
       if (!res.ok) throw new Error("API hatası: " + res.status);
       const data = await res.json();
       setApiResult(data);
+      saveProfile();
       goTo("dashboard");
     } catch (err) {
       setError("Sunucuya bağlanılamadı. API çalışıyor mu?");

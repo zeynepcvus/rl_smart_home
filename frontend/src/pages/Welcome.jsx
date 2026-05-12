@@ -14,7 +14,7 @@ const STEPS = [
   { num: "3", title: "Sonucu gör", desc: "RL ajanı 24 saatlik simülasyon çalıştırır, kural tabanlıyla karşılaştırır." },
 ];
 
-export default function Welcome({ goTo }) {
+export default function Welcome({ goTo, hasSavedProfile, loadProfile, clearProfile }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => setVisible(true), []);
 
@@ -70,24 +70,42 @@ export default function Welcome({ goTo }) {
       </p>
 
       {/* Buton */}
-      <button
-        onClick={() => goTo("schedule")}
-        style={{
-          background: "#1D9E75", color: "#fff", border: "none", borderRadius: 10,
-          padding: "13px 36px", fontSize: 14, fontWeight: 500, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 10, position: "relative",
-          opacity: visible ? 1 : 0, transition: "opacity 0.7s ease 0.3s, background 0.2s"
-        }}
-        onMouseEnter={e => e.currentTarget.style.background = "#0F6E56"}
-        onMouseLeave={e => e.currentTarget.style.background = "#1D9E75"}
-      >
-        Kuruluma Başla
-        <span style={{
-          width: 18, height: 18, borderRadius: "50%",
-          background: "rgba(255,255,255,0.2)", display: "flex",
-          alignItems: "center", justifyContent: "center", fontSize: 11
-        }}>→</span>
-      </button>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, opacity: visible ? 1 : 0, transition: "opacity 0.7s ease 0.3s" }}>
+        {hasSavedProfile && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(29,158,117,0.1)", border: "0.5px solid rgba(29,158,117,0.3)", borderRadius: 20, padding: "4px 12px", fontSize: 11, color: "#5DCAA5" }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#1D9E75" }} />
+            Kayıtlı ev profili bulundu
+          </div>
+        )}
+        <div style={{ display: "flex", gap: 10 }}>
+          {hasSavedProfile && (
+            <button
+              onClick={() => { loadProfile(); goTo("summary"); }}
+              style={{ background: "#1D9E75", color: "#fff", border: "none", borderRadius: 10, padding: "13px 28px", fontSize: 14, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+              onMouseEnter={e => e.currentTarget.style.background = "#0F6E56"}
+              onMouseLeave={e => e.currentTarget.style.background = "#1D9E75"}
+            >
+              Kayıtlı Evden Devam Et
+              <span style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>→</span>
+            </button>
+          )}
+          <button
+            onClick={() => { if (hasSavedProfile) clearProfile(); goTo("schedule"); }}
+            style={{
+              background: hasSavedProfile ? "transparent" : "#1D9E75",
+              color: hasSavedProfile ? "rgba(240,244,248,0.5)" : "#fff",
+              border: hasSavedProfile ? "0.5px solid rgba(255,255,255,0.12)" : "none",
+              borderRadius: 10, padding: "13px 28px", fontSize: 14, fontWeight: 500, cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 8
+            }}
+          >
+            {hasSavedProfile ? "Yeni Ev Kur" : "Kuruluma Başla"}
+            {!hasSavedProfile && (
+              <span style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>→</span>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* İstatistikler */}
       <div style={{
