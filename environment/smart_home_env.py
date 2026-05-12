@@ -301,6 +301,9 @@ class SmartHomeEnv(gym.Env):
                 continue
 
             if device.device_type == DEVICE_TYPE_SHIFTABLE:
+                if not device.active_today:
+                    masked_action[i] = 0
+                    continue
                 if desired == 1 and (device.is_completed or device.is_active):
                     masked_action[i] = 0
                     desired = 0
@@ -394,6 +397,8 @@ class SmartHomeEnv(gym.Env):
         for device in self.slot_manager.slots:
             if device.device_type != DEVICE_TYPE_SHIFTABLE:
                 continue
+            if not device.active_today:
+                continue
             if device.deadline is None:
                 continue
             if device.is_completed or device.deadline_missed:
@@ -455,6 +460,8 @@ class SmartHomeEnv(gym.Env):
         task_reward = 0.0
         for device in self.slot_manager.slots:
             if device.device_type != DEVICE_TYPE_SHIFTABLE:
+                continue
+            if not device.active_today:
                 continue
 
             priority = max(device.usage_profile.user_priority, 0.1)
