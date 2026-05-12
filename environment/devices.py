@@ -67,6 +67,7 @@ class Device:
     previous_active_state: bool = False
     switch_count: int = 0
     activation_count: int = 0
+    active_today: bool = True
 
     def __post_init__(self) -> None:
         if self.device_type not in VALID_DEVICE_TYPES:
@@ -174,6 +175,7 @@ class Device:
         self.previous_active_state = False
         self.switch_count = 0
         self.activation_count = 0
+        self.active_today = True
 
 
 # Hazır cihaz şablonları
