@@ -32,11 +32,11 @@ export default function Summary({ goTo, formData, setApiResult }) {
     setError(null);
     try {
       const devices = formData.devices.map(d => ({
-        name: d.name,
-        preset: d.preset ?? true,
+        name: d.apiName ?? d.name,
+        preset: d.apiName != null,
         power_kw: d.power ?? null,
-        duration: d.duration ?? null,
-        deadline: d.deadline ?? null,
+        duration: d.duration !== "" ? d.duration : null,
+        deadline: d.deadline !== "" ? d.deadline : null,
       }));
 
       const res = await fetch("http://localhost:8000/run", {

@@ -2,11 +2,11 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
 const PRESETS = [
-  { name: "HVAC", type: "continuous", power: 2.5, comfort: true, lighting: false },
-  { name: "Çamaşır Makinesi", type: "shiftable", power: 1.5, duration: 2, deadline: 22, comfort: false, lighting: false },
-  { name: "Bulaşık Makinesi", type: "shiftable", power: 1.5, duration: 2, deadline: 23, comfort: false, lighting: false },
-  { name: "Aydınlatma", type: "continuous", power: 0.3, comfort: false, lighting: true },
-  { name: "Su Isıtıcı", type: "shiftable", power: 1.5, duration: 1, deadline: 22, comfort: false, lighting: false },
+  { name: "HVAC", apiName: "HVAC", type: "continuous", power: 2.5, comfort: true, lighting: false },
+  { name: "Çamaşır Makinesi", apiName: "Washing Machine", type: "shiftable", power: 1.5, duration: 2, deadline: 22, comfort: false, lighting: false },
+  { name: "Bulaşık Makinesi", apiName: "Dishwasher", type: "shiftable", power: 1.5, duration: 2, deadline: 23, comfort: false, lighting: false },
+  { name: "Aydınlatma", apiName: "Lighting", type: "continuous", power: 0.3, comfort: false, lighting: true },
+  { name: "Su Isıtıcı", apiName: "Water Heater", type: "shiftable", power: 1.5, duration: 1, deadline: 22, comfort: false, lighting: false },
 ];
 
 const COLORS = [
@@ -17,7 +17,7 @@ const COLORS = [
   { bg: "rgba(239,159,39,0.15)", color: "#EF9F27" },
 ];
 
-const EMPTY_FORM = { name: "", type: "continuous", power: "", duration: "", deadline: 22, comfort: false, lighting: false };
+const EMPTY_FORM = { name: "", apiName: null, type: "continuous", power: "", duration: "", deadline: 22, comfort: false, lighting: false };
 
 export default function DeviceSetup({ goTo, formData, updateForm }) {
   const [devices, setDevices] = useState(formData.devices || []);
@@ -26,7 +26,7 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
 
   const openModal = () => { setForm(EMPTY_FORM); setShowModal(true); };
   const closeModal = () => setShowModal(false);
-  const fillPreset = (p) => setForm({ name: p.name, type: p.type, power: p.power, duration: p.duration || "", deadline: p.deadline || 22, comfort: p.comfort, lighting: p.lighting });
+  const fillPreset = (p) => setForm({ name: p.name, apiName: p.apiName, type: p.type, power: p.power, duration: p.duration || "", deadline: p.deadline || 22, comfort: p.comfort, lighting: p.lighting });
   const saveDevice = () => {
     if (!form.name || !form.power) return;
     const newDevices = [...devices, { ...form, power: parseFloat(form.power) }];

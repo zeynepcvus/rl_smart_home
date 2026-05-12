@@ -1,4 +1,5 @@
-const pct = (rl, rb) => rb === 0 ? "0.0" : (((rb - rl) / Math.abs(rb)) * 100).toFixed(1);
+const pct = (rl, rb) => rb === 0 ? 0 : ((rb - rl) / Math.abs(rb)) * 100;
+const fmtPct = (p) => Math.abs(p).toFixed(1);
 
 export default function Comparison({ goTo, formData, apiResult }) {
   const rlSum = apiResult?.rl?.summary || {};
@@ -102,11 +103,15 @@ export default function Comparison({ goTo, formData, apiResult }) {
                   <span style={{ fontSize: 12, color: "rgba(240,244,248,0.55)" }}>{row.label}</span>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                     <span style={{ fontSize: 14, fontWeight: 500, color: same ? "rgba(240,244,248,0.4)" : "#5DCAA5" }}>{row.rl}</span>
-                    {row.showPct && !same && (
-                      <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 3, background: "rgba(29,158,117,0.15)", color: "#5DCAA5" }}>
-                        -{pct(row.rl, row.rb)}%
-                      </span>
-                    )}
+                    {row.showPct && !same && (() => {
+                      const p = pct(row.rl, row.rb);
+                      const better = p > 0;
+                      return (
+                        <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 3, background: better ? "rgba(29,158,117,0.15)" : "rgba(226,75,74,0.15)", color: better ? "#5DCAA5" : "#e24b4a" }}>
+                          {better ? `-${fmtPct(p)}%` : `+${fmtPct(p)}%`}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 500, color: same ? "rgba(240,244,248,0.4)" : "rgba(240,244,248,0.6)", textAlign: "center" }}>{row.rb}</span>
                 </div>
@@ -142,8 +147,14 @@ export default function Comparison({ goTo, formData, apiResult }) {
             <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: ".85rem 1rem" }}>
               <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Öne çıkan bulgular</div>
               {[
-                { text: <span>RL ajanı <strong style={{ color: "#5DCAA5" }}>%{pct(RL.cost, RB.cost)} daha ucuz</strong> enerji kullandı.</span>, green: RL.cost <= RB.cost },
-                { text: <span>Konfor ihlali <strong style={{ color: "#5DCAA5" }}>%{pct(RL.comfort, RB.comfort)} azaldı</strong> — HVAC daha stabil çalıştı.</span>, green: RL.comfort <= RB.comfort },
+                { text: RL.cost <= RB.cost
+                    ? <span>RL ajanı <strong style={{ color: "#5DCAA5" }}>%{fmtPct(pct(RL.cost, RB.cost))} daha ucuz</strong> enerji kullandı.</span>
+                    : <span>RL ajanı kural tabanlıdan <strong style={{ color: "#e24b4a" }}>%{fmtPct(pct(RL.cost, RB.cost))} daha pahalı</strong> çalıştı.</span>,
+                  green: RL.cost <= RB.cost },
+                { text: RL.comfort <= RB.comfort
+                    ? <span>Konfor ihlali <strong style={{ color: "#5DCAA5" }}>%{fmtPct(pct(RL.comfort, RB.comfort))} azaldı</strong> — HVAC daha stabil çalıştı.</span>
+                    : <span>Konfor ihlali <strong style={{ color: "#e24b4a" }}>%{fmtPct(pct(RL.comfort, RB.comfort))} arttı</strong> — kural tabanlı daha stabil çalıştı.</span>,
+                  green: RL.comfort <= RB.comfort },
                 { text: <span>Deadline ihlali: RL <strong style={{ color: "#5DCAA5" }}>{RL.deadline}</strong>, Kural tabanlı <strong style={{ color: "#5DCAA5" }}>{RB.deadline}</strong>.</span>, green: RL.deadline <= RB.deadline },
                 { text: <span>Sonuçlar <strong style={{ color: "#FAC775" }}>simülasyon ortamında</strong> elde edildi.</span>, green: false },
               ].map((b, i) => (

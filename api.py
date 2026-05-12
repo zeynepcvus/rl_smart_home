@@ -81,7 +81,7 @@ def run_rl(slot_manager: SlotManager, scenario, mode: str) -> dict:
     vec_env = VecNormalize.load(f"{model_dir}/vec_normalize.pkl", dummy)
     vec_env.training = False
     vec_env.norm_reward = False
-    model = PPO.load(f"{model_dir}/best_model/best_model", env=vec_env)
+    model = PPO.load(f"{model_dir}/best_model/best_model.zip", env=vec_env)
 
     obs = vec_env.reset()
     hours = []
