@@ -26,7 +26,11 @@ export default function Dashboard({ goTo, formData, apiResult }) {
     comfort: { label: "Konfor Odaklı", icon: "🌡️" },
   };
   const mode = MODE_LABELS[formData?.mode] || MODE_LABELS.balanced;
-  const allDevices = ["HVAC", "Lighting", ...(formData?.devices?.map(d => d.name) || [])];
+  const allDeviceEntries = [
+    { display: "HVAC", api: "HVAC" },
+    { display: "Lighting", api: "Lighting" },
+    ...(formData?.devices?.map(d => ({ display: d.name, api: d.apiName ?? d.name })) || []),
+  ];
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', sans-serif" }}>
@@ -69,13 +73,13 @@ export default function Dashboard({ goTo, formData, apiResult }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
               <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Son saat cihaz durumları</div>
-              {allDevices.map(name => {
-                const isActive = activeDevices.includes(name);
+              {allDeviceEntries.map(entry => {
+                const isActive = activeDevices.includes(entry.api);
                 return (
-                  <div key={name} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}>
+                  <div key={entry.api} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}>
                     <div style={{ width: 7, height: 7, borderRadius: "50%", flexShrink: 0, background: isActive ? "#1D9E75" : "rgba(255,255,255,0.15)", boxShadow: isActive ? "0 0 4px rgba(29,158,117,0.6)" : "none" }} />
-                    <span style={{ fontSize: 12, color: "rgba(240,244,248,0.8)", flex: 1 }}>{name}</span>
-                    <span style={{ fontSize: 10, color: "rgba(240,244,248,0.35)" }}>{isActive ? "Aktif" : "Kapalı"}</span>
+                    <span style={{ fontSize: 12, color: "rgba(240,244,248,0.8)", flex: 1 }}>{entry.display}</span>
+                    <span style={{ fontSize: 10, color: isActive ? "#5DCAA5" : "rgba(240,244,248,0.35)" }}>{isActive ? "Aktif" : "Kapalı"}</span>
                   </div>
                 );
               })}
@@ -86,7 +90,7 @@ export default function Dashboard({ goTo, formData, apiResult }) {
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: "#5DCAA5", marginBottom: 2 }}>{indoorTemp}°C</div>
               <div style={{ fontSize: 11, color: "rgba(240,244,248,0.35)", marginBottom: ".75rem" }}>Hedef bant: {formData?.tempMin ?? 20}–{formData?.tempMax ?? 24} °C</div>
               <div style={{ height: 6, background: "rgba(255,255,255,0.07)", borderRadius: 3, position: "relative", marginBottom: 4 }}>
-                <div style={{ position: "absolute", height: "100%", background: "rgba(29,158,117,0.3)", borderRadius: 3, left: "28%", width: "29%" }} />
+                <div style={{ position: "absolute", height: "100%", background: "rgba(29,158,117,0.3)", borderRadius: 3, left: `${(((formData?.tempMin ?? 20) - 16) / 14) * 100}%`, width: `${(((formData?.tempMax ?? 24) - (formData?.tempMin ?? 20)) / 14) * 100}%` }} />
                 <div style={{ position: "absolute", width: 3, height: 14, background: "#5DCAA5", borderRadius: 2, top: -4, left: `${Math.min(Math.max(((indoorTemp - 16) / 14) * 100, 0), 100)}%`, transform: "translateX(-50%)" }} />
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "rgba(240,244,248,0.25)" }}>
@@ -113,7 +117,7 @@ export default function Dashboard({ goTo, formData, apiResult }) {
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
               <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Saatlik maliyet</div>
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 40 }}>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 80 }}>
                 {hourlyCosts.map((c, i) => (
                   <div key={i} style={{ flex: 1, borderRadius: "2px 2px 0 0", background: priceColor(hourlyPrices[i]), height: `${Math.max((c / maxCost) * 100, 5)}%` }} />
                 ))}
