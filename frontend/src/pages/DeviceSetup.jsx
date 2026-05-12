@@ -2,11 +2,11 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
 const PRESETS = [
-  { name: "HVAC", apiName: "HVAC", type: "continuous", power: 2.5, comfort: true, lighting: false },
   { name: "Çamaşır Makinesi", apiName: "Washing Machine", type: "shiftable", power: 1.5, duration: 2, deadline: 22, comfort: false, lighting: false },
   { name: "Bulaşık Makinesi", apiName: "Dishwasher", type: "shiftable", power: 1.5, duration: 2, deadline: 23, comfort: false, lighting: false },
-  { name: "Aydınlatma", apiName: "Lighting", type: "continuous", power: 0.3, comfort: false, lighting: true },
   { name: "Su Isıtıcı", apiName: "Water Heater", type: "shiftable", power: 1.5, duration: 1, deadline: 22, comfort: false, lighting: false },
+  { name: "EV Şarj", apiName: "EV Charger", type: "shiftable", power: 7.2, duration: 3, deadline: 8, comfort: false, lighting: false },
+  { name: "Çamaşır Kurutma", apiName: "Tumble Dryer", type: "shiftable", power: 2.5, duration: 2, deadline: 22, comfort: false, lighting: false },
 ];
 
 const COLORS = [
@@ -54,9 +54,16 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
           Evindeki cihazları ekle
         </div>
-        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.4)", marginBottom: "1.5rem", fontWeight: 300 }}>
+        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.4)", marginBottom: "1rem", fontWeight: 300 }}>
           Hangi cihazları kullanmak istiyorsan ekle. Maksimum 5 cihaz.
         </p>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(29,158,117,0.07)", border: "0.5px solid rgba(29,158,117,0.2)", borderRadius: 8, padding: "8px 12px", marginBottom: "1rem" }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#1D9E75", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, color: "rgba(240,244,248,0.5)", lineHeight: 1.5 }}>
+            <span style={{ color: "#5DCAA5", fontWeight: 500 }}>HVAC</span> ve <span style={{ color: "#5DCAA5", fontWeight: 500 }}>Aydınlatma</span> her simülasyona otomatik dahil edilir — ayrıca eklemen gerekmiyor.
+          </span>
+        </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: "1rem" }}>
           <span style={{ fontSize: 12, color: "rgba(240,244,248,0.4)" }}>Eklenen cihaz:</span>

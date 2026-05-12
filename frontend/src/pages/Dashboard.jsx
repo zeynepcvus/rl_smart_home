@@ -44,6 +44,7 @@ export default function Dashboard({ goTo, formData, apiResult }) {
         <span style={{ fontSize: 11, color: "#5DCAA5", padding: "3px 10px", borderRadius: 6, background: "rgba(29,158,117,0.12)", fontWeight: 500 }}>{mode.icon} {mode.label}</span>
         <span style={{ fontSize: 12, color: "#5DCAA5", padding: "5px 12px", borderRadius: 6, background: "rgba(29,158,117,0.12)", fontWeight: 500 }}>Dashboard</span>
         <span onClick={() => goTo("comparison")} style={{ fontSize: 12, color: "rgba(240,244,248,0.4)", padding: "5px 12px", borderRadius: 6, cursor: "pointer" }}>Karşılaştırma</span>
+        <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.25)", padding: "5px 12px", borderRadius: 6, cursor: "pointer", borderLeft: "0.5px solid rgba(255,255,255,0.07)", marginLeft: 4 }}>Yeniden Başla</span>
         <span style={{ fontSize: 12, color: "rgba(240,244,248,0.35)", marginLeft: "auto" }}>{apiResult ? `Simülasyon tamamlandı · ${currentHour} saat` : "Veri bekleniyor..."}</span>
       </div>
 
@@ -72,7 +73,7 @@ export default function Dashboard({ goTo, formData, apiResult }) {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Son saat cihaz durumları</div>
+              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Saat {lastHour.hour ?? 23} · Cihaz Durumları</div>
               {allDeviceEntries.map(entry => {
                 const isActive = activeDevices.includes(entry.api);
                 return (

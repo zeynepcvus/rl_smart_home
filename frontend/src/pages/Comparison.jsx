@@ -42,6 +42,7 @@ export default function Comparison({ goTo, formData, apiResult }) {
         </div>
         <span onClick={() => goTo("dashboard")} style={{ fontSize: 12, color: "rgba(240,244,248,0.4)", padding: "5px 12px", borderRadius: 6, cursor: "pointer" }}>Dashboard</span>
         <span style={{ fontSize: 12, color: "#5DCAA5", padding: "5px 12px", borderRadius: 6, background: "rgba(29,158,117,0.12)", fontWeight: 500 }}>Karşılaştırma</span>
+        <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.25)", padding: "5px 12px", borderRadius: 6, cursor: "pointer", borderLeft: "0.5px solid rgba(255,255,255,0.07)", marginLeft: 4 }}>Yeniden Başla</span>
       </div>
 
       <div style={{ flex: 1, padding: "1.25rem 1.5rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 12 }}>

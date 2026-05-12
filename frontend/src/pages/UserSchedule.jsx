@@ -36,8 +36,8 @@ export default function UserSchedule({ goTo, formData, updateForm }) {
             Uyku programı
           </div>
           {[
-            { label: "Uyanma saati", key: "awakeStart", options: [6, 7, 8, 9] },
-            { label: "Uyuma saati", key: "sleepStart", options: [22, 23, 24] },
+            { label: "Uyanma saati", key: "awakeStart", options: [5, 6, 7, 8, 9, 10] },
+            { label: "Uyuma saati", key: "sleepStart", options: [21, 22, 23, 24] },
           ].map(field => (
             <div key={field.key} style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: ".85rem" }}>
               <span style={{ fontSize: 13, color: "rgba(240,244,248,0.6)", width: 110, flexShrink: 0 }}>{field.label}</span>
