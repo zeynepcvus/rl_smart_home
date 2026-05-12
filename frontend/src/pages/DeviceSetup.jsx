@@ -34,7 +34,7 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
     closeModal();
   };
   const removeDevice = (idx) => setDevices(devices.filter((_, i) => i !== idx));
-  const handleNext = () => { updateForm({ devices }); goTo("summary"); };
+  const handleNext = () => { updateForm({ devices }); goTo("comfort"); };
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", fontFamily: "'DM Sans', sans-serif" }}>
@@ -48,7 +48,7 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "84%", background: "#1D9E75", borderRadius: 2 }} />
+          <div style={{ height: "100%", width: "56%", background: "#1D9E75", borderRadius: 2 }} />
         </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
@@ -106,7 +106,7 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
         </button>
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1rem" }}>
-          <button onClick={() => goTo("comfort")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
+          <button onClick={() => goTo("mode")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
           <button onClick={handleNext} style={{ background: "#1D9E75", border: "none", borderRadius: 8, padding: "10px 28px", fontSize: 13, fontWeight: 500, color: "#fff", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>Devam Et →</button>
         </div>
       </div>

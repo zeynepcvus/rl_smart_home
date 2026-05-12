@@ -64,7 +64,6 @@ export default function UserSchedule({ goTo, formData, updateForm }) {
           <div style={{ display: "flex", gap: 10, marginBottom: "1rem" }}>
             {[
               { val: "home", label: "Evet, gün boyu evdeyim" },
-              { val: "partial", label: "Kısmen — belirli saatlerde yokum" },
               { val: "away", label: "Hayır, gün boyu dışarıdayım" },
             ].map(opt => (
               <button key={opt.val} onClick={() => setOccupancy(opt.val)} style={{

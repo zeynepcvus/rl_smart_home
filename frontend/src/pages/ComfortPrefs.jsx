@@ -1,12 +1,8 @@
-import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
 export default function ComfortPrefs({ goTo, formData, updateForm }) {
-  const [lighting, setLighting] = useState(formData.lightingEnabled);
-
   const handleNext = () => {
-    updateForm({ lightingEnabled: lighting });
-    goTo("devices");
+    goTo("summary");
   };
 
   return (
@@ -21,7 +17,7 @@ export default function ComfortPrefs({ goTo, formData, updateForm }) {
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "56%", background: "#1D9E75", borderRadius: 2 }} />
+          <div style={{ height: "100%", width: "84%", background: "#1D9E75", borderRadius: 2 }} />
         </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
@@ -74,27 +70,9 @@ export default function ComfortPrefs({ goTo, formData, updateForm }) {
           </div>
         </div>
 
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" }}>
-          <div style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase", marginBottom: "1rem" }}>
-            Aydınlatma
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, color: "rgba(240,244,248,0.85)", marginBottom: 2 }}>Aydınlatma konfor kontrolü</div>
-              <div style={{ fontSize: 11, color: "rgba(240,244,248,0.35)", lineHeight: 1.5 }}>Gece ve kullanıcı evdeyken aydınlatma ihtiyacı hesaba katılır.</div>
-            </div>
-            <div onClick={() => setLighting(!lighting)} style={{
-              width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-              background: lighting ? "#1D9E75" : "rgba(255,255,255,0.1)",
-              position: "relative", transition: "background .2s", flexShrink: 0
-            }}>
-              <div style={{ position: "absolute", width: 16, height: 16, borderRadius: "50%", background: "#fff", top: 3, left: lighting ? 21 : 3, transition: "left .2s" }} />
-            </div>
-          </div>
-        </div>
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1.25rem" }}>
-          <button onClick={() => goTo("mode")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
+          <button onClick={() => goTo("devices")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
           <button onClick={handleNext} style={{ background: "#1D9E75", border: "none", borderRadius: 8, padding: "10px 28px", fontSize: 13, fontWeight: 500, color: "#fff", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>Devam Et →</button>
         </div>
       </div>

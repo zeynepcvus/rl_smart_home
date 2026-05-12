@@ -45,6 +45,10 @@ export default function Summary({ goTo, formData, setApiResult }) {
         body: JSON.stringify({
           mode: formData.mode,
           user_home: formData.occupancy !== "away",
+          temp_min: formData.tempMin,
+          temp_max: formData.tempMax,
+          awake_start: formData.awakeStart,
+          sleep_start: formData.sleepStart,
           devices,
         }),
       });
@@ -108,7 +112,6 @@ export default function Summary({ goTo, formData, setApiResult }) {
             {[
               { label: "Min sıcaklık", val: `${formData.tempMin} °C` },
               { label: "Max sıcaklık", val: `${formData.tempMax} °C` },
-              { label: "Aydınlatma kontrolü", val: formData.lightingEnabled ? "Aktif" : "Pasif", green: formData.lightingEnabled },
             ].map(row => (
               <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}>
                 <span style={{ fontSize: 12, color: "rgba(240,244,248,0.45)" }}>{row.label}</span>
@@ -171,7 +174,7 @@ export default function Summary({ goTo, formData, setApiResult }) {
         </div>
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1rem" }}>
-          <button onClick={() => goTo("devices")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
+          <button onClick={() => goTo("comfort")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
           <button
             onClick={handleStart}
             disabled={loading}
