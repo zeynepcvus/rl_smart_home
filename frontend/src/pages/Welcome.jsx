@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
 
-const DEVICES = [
-  { icon: "AC", bg: "rgba(29,158,117,0.15)", color: "#5DCAA5", name: "HVAC", desc: "akıllı ısı kontrolü" },
-  { icon: "WM", bg: "rgba(55,138,221,0.15)", color: "#85B7EB", name: "Çamaşır", desc: "ucuz saate kaydır" },
-  { icon: "DW", bg: "rgba(168,85,247,0.15)", color: "#c084fc", name: "Bulaşık", desc: "gece çalıştır" },
-  { icon: "LT", bg: "rgba(250,199,117,0.15)", color: "#FAC775", name: "Aydınlatma", desc: "ihtiyaca göre" },
-  { icon: "WH", bg: "rgba(239,159,39,0.15)", color: "#EF9F27", name: "Su Isıtıcı", desc: "enerji verimli" },
-];
 
 const STEPS = [
   { num: "1", title: "Cihazlarını tanıt", desc: "Hangi cihazları kullandığını ve günlük programını belirt." },
@@ -156,27 +149,6 @@ export default function Welcome({ goTo, hasSavedProfile, loadProfile, clearProfi
         </div>
       </div>
 
-      {/* Cihaz kartları */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: "1.25rem",
-        position: "relative", opacity: visible ? 1 : 0, transition: "opacity 0.7s ease 0.6s", maxWidth: 640, width: "100%"
-      }}>
-        {DEVICES.map((c, i) => (
-          <div key={i} style={{
-            background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.08)",
-            borderRadius: 10, padding: "8px 12px", display: "flex", alignItems: "center", gap: 8
-          }}>
-            <div style={{
-              width: 26, height: 26, borderRadius: 7, background: c.bg, color: c.color,
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 600
-            }}>{c.icon}</div>
-            <div>
-              <div style={{ fontSize: 12, color: "rgba(240,244,248,0.85)", fontWeight: 500 }}>{c.name}</div>
-              <div style={{ fontSize: 11, color: "rgba(240,244,248,0.45)" }}>{c.desc}</div>
-            </div>
-          </div>
-        ))}
-      </div>
 
       <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
     </div>

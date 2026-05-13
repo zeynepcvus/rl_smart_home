@@ -37,9 +37,10 @@ export default function Dashboard({ goTo, formData, apiResult }) {
       <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(rgba(29,158,117,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(29,158,117,0.04) 1px, transparent 1px)", backgroundSize: "40px 40px", pointerEvents: "none" }} />
 
       <div style={{ display: "flex", alignItems: "center", padding: ".85rem 1.5rem", borderBottom: "0.5px solid rgba(255,255,255,0.07)", position: "relative", zIndex: 1 }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 14, color: "#5DCAA5", display: "flex", alignItems: "center", gap: 6, width: 160, flexShrink: 0 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#1D9E75", animation: "blink 2s ease infinite" }} />
-          SmartHome RL
+        <div style={{ display: "flex", alignItems: "center", gap: 7, width: 160, flexShrink: 0 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#1D9E75", boxShadow: "0 0 6px rgba(29,158,117,0.8)", animation: "blink 2s ease infinite", flexShrink: 0 }} />
+          <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 15, color: "#f0f4f8" }}>SmartHome</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#1D9E75", background: "rgba(29,158,117,0.15)", border: "0.5px solid rgba(29,158,117,0.4)", borderRadius: 5, padding: "1px 6px", letterSpacing: ".04em" }}>RL</span>
         </div>
         <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 4 }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: "#f0f4f8", padding: "6px 16px", borderRadius: 8, background: "rgba(29,158,117,0.15)", border: "0.5px solid rgba(29,158,117,0.4)" }}>Dashboard</span>
@@ -47,7 +48,7 @@ export default function Dashboard({ goTo, formData, apiResult }) {
         </div>
         <div style={{ width: 160, flexShrink: 0, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 11, color: "#5DCAA5", padding: "3px 10px", borderRadius: 6, background: "rgba(29,158,117,0.1)", fontWeight: 500 }}>{mode.icon} {mode.label}</span>
-          <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.3)", cursor: "pointer", padding: "5px 8px", borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.08)" }}>↩ Başa dön</span>
+          <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.65)", cursor: "pointer", padding: "5px 10px", borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.04)", transition: "all .15s" }}>↩ Başa dön</span>
         </div>
       </div>
 
