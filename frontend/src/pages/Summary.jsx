@@ -90,9 +90,9 @@ export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "1rem" }}>
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: "3px solid #85B7EB", borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>Kullanıcı programı</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: "#85B7EB", letterSpacing: ".07em", textTransform: "uppercase" }}>Kullanıcı programı</span>
               <button onClick={() => goTo("schedule")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
             </div>
             {[
@@ -107,7 +107,7 @@ export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
             ))}
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: "3px solid #1D9E75", borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
               <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>Konfor tercihleri</span>
               <button onClick={() => goTo("comfort")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
@@ -123,9 +123,9 @@ export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
             ))}
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: `3px solid ${mode.color}`, borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>Optimizasyon modu</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: mode.color, letterSpacing: ".07em", textTransform: "uppercase" }}>Optimizasyon modu</span>
               <button onClick={() => goTo("mode")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0" }}>
@@ -134,9 +134,9 @@ export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
             </div>
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: "3px solid #c084fc", borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>
+              <span style={{ fontSize: 11, fontWeight: 500, color: "#c084fc", letterSpacing: ".07em", textTransform: "uppercase" }}>
                 Cihazlar ({formData.devices.filter(d => d.activeToday !== false).length} aktif · {formData.devices.length} kayıtlı)
               </span>
               <button onClick={() => goTo("devices")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>

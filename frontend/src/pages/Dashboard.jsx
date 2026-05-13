@@ -60,18 +60,31 @@ export default function Dashboard({ goTo, formData, apiResult }) {
 
         {apiResult && <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-            {[
-              { label: "Günlük maliyet", val: `${totalCost} TL`, color: "#5DCAA5", sub: "24 saat tamamlandı" },
-              { label: "Konfor ihlali", val: comfortViolations, color: comfortViolations > 3 ? "#FAC775" : "#5DCAA5", sub: "Bugün toplam" },
-              { label: "Deadline ihlali", val: summary.deadline_violations ?? 0, color: "#5DCAA5", sub: "Bugün toplam" },
-              { label: "HVAC anahtarı", val: summary.hvac_switches ?? 0, color: "#f0f4f8", sub: "Aç/kapat sayısı" },
-            ].map(m => (
-              <div key={m.label} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".75rem 1rem" }}>
-                <div style={{ fontSize: 10, color: "rgba(240,244,248,0.35)", letterSpacing: ".05em", textTransform: "uppercase", marginBottom: 4 }}>{m.label}</div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: m.color }}>{m.val}</div>
-                <div style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", marginTop: 2 }}>{m.sub}</div>
-              </div>
-            ))}
+            {(() => {
+              const dl = summary.deadline_violations ?? 0;
+              const hvac = summary.hvac_switches ?? 0;
+              const comfortAccent = comfortViolations === 0 ? "#1D9E75" : comfortViolations <= 3 ? "#FAC775" : "#e24b4a";
+              const deadlineAccent = dl === 0 ? "#1D9E75" : dl <= 2 ? "#FAC775" : "#e24b4a";
+              return [
+                { label: "Günlük maliyet", val: `${totalCost} TL`, color: "#5DCAA5", accent: "#1D9E75", sub: "24 saat tamamlandı" },
+                { label: "Konfor ihlali", val: comfortViolations, color: comfortAccent, accent: comfortAccent, sub: "Bugün toplam" },
+                { label: "Deadline ihlali", val: dl, color: deadlineAccent, accent: deadlineAccent, sub: "Bugün toplam" },
+                { label: "HVAC anahtarı", val: hvac, color: "#85B7EB", accent: "#85B7EB", sub: "Aç/kapat sayısı" },
+              ].map(m => (
+                <div key={m.label} style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "0.5px solid rgba(255,255,255,0.08)",
+                  borderLeft: `3px solid ${m.accent}`,
+                  borderRadius: 10,
+                  padding: ".75rem 1rem",
+                  boxShadow: `inset 0 0 20px rgba(0,0,0,0.1)`,
+                }}>
+                  <div style={{ fontSize: 10, color: "rgba(240,244,248,0.35)", letterSpacing: ".05em", textTransform: "uppercase", marginBottom: 4 }}>{m.label}</div>
+                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: m.color }}>{m.val}</div>
+                  <div style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", marginTop: 2 }}>{m.sub}</div>
+                </div>
+              ));
+            })()}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
