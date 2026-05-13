@@ -2,6 +2,8 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
 const PRESETS = [
+  { name: "HVAC", apiName: "HVAC", type: "continuous", power: 2.5, duration: null, deadline: null, comfort: true, lighting: false },
+  { name: "Aydınlatma", apiName: "Lighting", type: "continuous", power: 0.2, duration: null, deadline: null, comfort: false, lighting: true },
   { name: "Çamaşır Makinesi", apiName: "Washing Machine", type: "shiftable", power: 1.5, duration: 2, deadline: 22, comfort: false, lighting: false },
   { name: "Bulaşık Makinesi", apiName: "Dishwasher", type: "shiftable", power: 1.5, duration: 2, deadline: 23, comfort: false, lighting: false },
   { name: "Su Isıtıcı", apiName: "Water Heater", type: "shiftable", power: 1.5, duration: 1, deadline: 22, comfort: false, lighting: false },
