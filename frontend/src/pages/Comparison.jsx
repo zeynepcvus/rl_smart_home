@@ -123,26 +123,52 @@ export default function Comparison({ goTo, formData, apiResult }) {
           {/* Alt satır */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Görsel karşılaştırma</div>
-              {[
-                { label: "Maliyet (TL)", rlV: RL.cost, rbV: RB.cost },
-                { label: "Konfor ihlali", rlV: RL.comfort, rbV: RB.comfort },
-                { label: "HVAC anahtarı", rlV: RL.hvac, rbV: RB.hvac },
-              ].map(b => {
-                const mx = maxVal(b.rlV, b.rbV);
-                return (
-                  <div key={b.label} style={{ marginBottom: 8 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                      <span style={{ fontSize: 11, color: "rgba(240,244,248,0.45)" }}>{b.label}</span>
-                      <span style={{ fontSize: 10, color: "rgba(240,244,248,0.3)" }}>{b.rlV} vs {b.rbV}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Görsel karşılaştırma</div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {[{ color: "#1D9E75", label: "RL" }, { color: "rgba(240,244,248,0.25)", label: "Kural" }].map(l => (
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 2, background: l.color }} />
+                      <span style={{ fontSize: 10, color: "rgba(240,244,248,0.35)" }}>{l.label}</span>
                     </div>
-                    <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden", display: "flex", gap: 2 }}>
-                      <div style={{ height: "100%", width: `${(b.rlV / mx) * 50}%`, background: "#1D9E75", borderRadius: 3 }} />
-                      <div style={{ height: "100%", width: `${(b.rbV / mx) * 50}%`, background: "rgba(240,244,248,0.2)", borderRadius: 3 }} />
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "flex-end", height: 140 }}>
+                {[
+                  { label: "Maliyet (TL)", rlV: RL.cost, rbV: RB.cost },
+                  { label: "Konfor ihlali", rlV: RL.comfort, rbV: RB.comfort },
+                  { label: "HVAC anahtarı", rlV: RL.hvac, rbV: RB.hvac },
+                ].map(b => {
+                  const mx = maxVal(b.rlV, b.rbV);
+                  const rlH = Math.round((b.rlV / mx) * 90);
+                  const rbH = Math.round((b.rbV / mx) * 90);
+                  const rlBetter = b.rlV <= b.rbV;
+                  return (
+                    <div key={b.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
+                      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 110 }}>
+                        {[
+                          { h: rlH, val: b.rlV, color: "#1D9E75", textColor: "#5DCAA5", better: rlBetter },
+                          { h: rbH, val: b.rbV, color: "rgba(240,244,248,0.18)", textColor: "rgba(240,244,248,0.4)", better: !rlBetter },
+                        ].map((bar, bi) => (
+                          <div key={bi} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
+                            <span style={{ fontSize: 10, color: bar.textColor, fontWeight: 500, marginBottom: 3 }}>{bar.val}</span>
+                            <div style={{
+                              width: 22, height: bar.h,
+                              background: bar.color,
+                              borderRadius: "3px 3px 0 0",
+                              transition: "height .4s ease",
+                              boxShadow: bar.better ? `0 0 8px ${bar.color}88` : "none"
+                            }} />
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ width: "100%", height: 1, background: "rgba(255,255,255,0.08)" }} />
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.3)", textAlign: "center", marginTop: 5, lineHeight: 1.3 }}>{b.label}</span>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
             <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: ".85rem 1rem" }}>
