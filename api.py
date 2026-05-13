@@ -70,6 +70,8 @@ def build_slot_manager(req: RunRequest) -> SlotManager:
     slot_manager.add_device(create_device_from_preset("HVAC"))
     slot_manager.add_device(create_device_from_preset("Lighting"))
     for d in req.devices:
+        if d.name in ("HVAC", "Lighting"):
+            continue
         if d.preset:
             device = create_device_from_preset(d.name)
             if (d.deadline is not None
