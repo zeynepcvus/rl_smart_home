@@ -47,6 +47,22 @@ class RunRequest(BaseModel):
     mode: str = "balanced"
     devices: list[DeviceInput]
     user_home: bool = True
+    temp_min: float = 20.0
+    temp_max: float = 24.0
+    awake_start: int = 7
+    sleep_start: int = 23
+
+
+def build_user_profiles(awake_start: int, sleep_start: int, user_home: bool):
+    occupancy_profile = np.zeros(24, dtype=np.float32)
+    lighting_need_profile = np.zeros(24, dtype=np.float32)
+    if user_home:
+        for hour in range(24):
+            occupancy = 1.0 if awake_start <= hour < sleep_start else 0.0
+            occupancy_profile[hour] = occupancy
+            is_dark = hour >= 18 or hour < 7
+            lighting_need_profile[hour] = 1.0 if is_dark and occupancy > 0 else 0.0
+    return occupancy_profile, lighting_need_profile
 
 
 def build_slot_manager(req: RunRequest) -> SlotManager:
@@ -67,11 +83,11 @@ def build_slot_manager(req: RunRequest) -> SlotManager:
     return slot_manager
 
 
-def run_rl(slot_manager: SlotManager, scenario, mode: str) -> dict:
+def run_rl(slot_manager: SlotManager, scenario, mode: str, temp_min: float = 20.0, temp_max: float = 24.0) -> dict:
     env = SmartHomeEnv(
         slot_manager=slot_manager,
-        temp_min=20.0,
-        temp_max=24.0,
+        temp_min=temp_min,
+        temp_max=temp_max,
         scenario=scenario,
         reward_weights=REWARD_WEIGHTS[mode],
     )
@@ -115,11 +131,11 @@ def run_rl(slot_manager: SlotManager, scenario, mode: str) -> dict:
     }
 
 
-def run_rule_based(slot_manager: SlotManager, scenario, mode: str) -> dict:
+def run_rule_based(slot_manager: SlotManager, scenario, mode: str, temp_min: float = 20.0, temp_max: float = 24.0) -> dict:
     env = SmartHomeEnv(
         slot_manager=slot_manager,
-        temp_min=20.0,
-        temp_max=24.0,
+        temp_min=temp_min,
+        temp_max=temp_max,
         scenario=scenario,
         reward_weights=REWARD_WEIGHTS[mode],
     )
@@ -169,13 +185,24 @@ def run_rule_based(slot_manager: SlotManager, scenario, mode: str) -> dict:
 @app.post("/run")
 def run_simulation(req: RunRequest):
     rng = np.random.default_rng(42)
-    scenario = replace(build_daily_scenario(rng), user_home=req.user_home)
+    base_scenario = build_daily_scenario(rng)
+    occupancy_profile, lighting_need_profile = build_user_profiles(
+        req.awake_start, req.sleep_start, req.user_home
+    )
+    scenario = replace(
+        base_scenario,
+        awake_start=req.awake_start,
+        sleep_start=req.sleep_start,
+        user_home=req.user_home,
+        occupancy_profile=occupancy_profile,
+        lighting_need_profile=lighting_need_profile,
+    )
 
     sm_rl = build_slot_manager(req)
-    rl_result = run_rl(sm_rl, scenario, req.mode)
+    rl_result = run_rl(sm_rl, scenario, req.mode, req.temp_min, req.temp_max)
 
     sm_rb = build_slot_manager(req)
-    rb_result = run_rule_based(sm_rb, scenario, req.mode)
+    rb_result = run_rule_based(sm_rb, scenario, req.mode, req.temp_min, req.temp_max)
 
     return {
         "rl": rl_result,

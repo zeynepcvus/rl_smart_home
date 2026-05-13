@@ -45,6 +45,10 @@ export default function Summary({ goTo, formData, setApiResult }) {
         body: JSON.stringify({
           mode: formData.mode,
           user_home: formData.occupancy !== "away",
+          temp_min: formData.tempMin,
+          temp_max: formData.tempMax,
+          awake_start: formData.awakeStart,
+          sleep_start: formData.sleepStart,
           devices,
         }),
       });
