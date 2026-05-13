@@ -76,7 +76,7 @@ export default function Dashboard({ goTo, formData, apiResult }) {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Saat {lastHour.hour ?? 23} · Cihaz Durumları</div>
+              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Simülasyon Sonu · Cihaz Durumları</div>
               {allDeviceEntries.map(entry => {
                 const isActive = activeDevices.includes(entry.api);
                 return (
