@@ -130,7 +130,7 @@ export default function Comparison({ goTo, formData, apiResult }) {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Görsel karşılaştırma</div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  {[{ color: "#1D9E75", label: "RL" }, { color: "rgba(240,244,248,0.25)", label: "Kural" }].map(l => (
+                  {[{ color: "#1D9E75", label: "RL" }, { color: "#85B7EB", label: "Kural" }].map(l => (
                     <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 2, background: l.color }} />
                       <span style={{ fontSize: 10, color: "rgba(240,244,248,0.35)" }}>{l.label}</span>
@@ -138,7 +138,7 @@ export default function Comparison({ goTo, formData, apiResult }) {
                   ))}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 8, alignItems: "flex-end", height: 140 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "flex-end", height: 155 }}>
                 {[
                   { label: "Maliyet (TL)", rlV: RL.cost, rbV: RB.cost },
                   { label: "Konfor ihlali", rlV: RL.comfort, rbV: RB.comfort },
@@ -148,27 +148,32 @@ export default function Comparison({ goTo, formData, apiResult }) {
                   const rlH = Math.round((b.rlV / mx) * 90);
                   const rbH = Math.round((b.rbV / mx) * 90);
                   const rlBetter = b.rlV <= b.rbV;
+                  const diff = pct(b.rlV, b.rbV);
+                  const diffLabel = b.rlV === b.rbV ? "Eşit" : rlBetter ? `-${fmtPct(diff)}%` : `+${fmtPct(diff)}%`;
+                  const diffColor = b.rlV === b.rbV ? "rgba(240,244,248,0.3)" : rlBetter ? "#5DCAA5" : "#e24b4a";
                   return (
                     <div key={b.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
-                      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 110 }}>
+                      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 110 }}>
                         {[
                           { h: rlH, val: b.rlV, color: "#1D9E75", textColor: "#5DCAA5", better: rlBetter },
-                          { h: rbH, val: b.rbV, color: "rgba(240,244,248,0.18)", textColor: "rgba(240,244,248,0.4)", better: !rlBetter },
+                          { h: rbH, val: b.rbV, color: "#85B7EB", textColor: "#85B7EB", better: !rlBetter },
                         ].map((bar, bi) => (
                           <div key={bi} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
                             <span style={{ fontSize: 10, color: bar.textColor, fontWeight: 500, marginBottom: 3 }}>{bar.val}</span>
                             <div style={{
-                              width: 22, height: bar.h,
+                              width: 28, height: bar.h,
                               background: bar.color,
                               borderRadius: "3px 3px 0 0",
                               transition: "height .4s ease",
-                              boxShadow: bar.better ? `0 0 8px ${bar.color}88` : "none"
+                              opacity: bar.better ? 1 : 0.55,
+                              boxShadow: bar.better ? `0 0 10px ${bar.color}66` : "none"
                             }} />
                           </div>
                         ))}
                       </div>
                       <div style={{ width: "100%", height: 1, background: "rgba(255,255,255,0.08)" }} />
-                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.3)", textAlign: "center", marginTop: 5, lineHeight: 1.3 }}>{b.label}</span>
+                      <span style={{ fontSize: 10, color: diffColor, fontWeight: 600, marginTop: 5 }}>{diffLabel}</span>
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.25)", textAlign: "center", marginTop: 2, lineHeight: 1.3 }}>{b.label}</span>
                     </div>
                   );
                 })}
