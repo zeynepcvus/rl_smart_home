@@ -1,9 +1,34 @@
 import Sidebar from "../components/Sidebar";
 
+const TEMP_MIN_RECOMMENDED = 20;
+const TEMP_MAX_RECOMMENDED = 24;
+const TEMP_MIN_LOW = 18;
+const TEMP_MIN_HIGH = 22;
+const TEMP_MAX_LOW = 22;
+const TEMP_MAX_HIGH = 26;
+
+function getTempWarning(key, value, formData) {
+  if (key === "tempMin") {
+    if (value < TEMP_MIN_LOW) return `Çok düşük — önerilen minimum ${TEMP_MIN_RECOMMENDED}°C`;
+    if (value > TEMP_MIN_HIGH) return `Çok yüksek — önerilen minimum ${TEMP_MIN_RECOMMENDED}°C`;
+  }
+  if (key === "tempMax") {
+    if (value < TEMP_MAX_LOW) return `Çok düşük — önerilen maksimum ${TEMP_MAX_RECOMMENDED}°C`;
+    if (value > TEMP_MAX_HIGH) return `Çok yüksek — önerilen maksimum ${TEMP_MAX_RECOMMENDED}°C`;
+  }
+  if ((formData.tempMax - formData.tempMin) < 2) return "Aralık çok dar — HVAC sürekli çalışabilir";
+  return null;
+}
+
 export default function ComfortPrefs({ goTo, formData, updateForm }) {
   const handleNext = () => {
     goTo("summary");
   };
+
+  const fields = [
+    { label: "Minimum sıcaklık", key: "tempMin", icon: "🥶" },
+    { label: "Maksimum sıcaklık", key: "tempMax", icon: "🥵" },
+  ];
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", fontFamily: "'DM Sans', sans-serif" }}>
@@ -28,30 +53,72 @@ export default function ComfortPrefs({ goTo, formData, updateForm }) {
           <div style={{ fontSize: 11, fontWeight: 500, color: "#FAC775", letterSpacing: ".07em", textTransform: "uppercase", marginBottom: "1.25rem" }}>
             🌡️ Sıcaklık bandı
           </div>
-          {[
-            { label: "Minimum sıcaklık", key: "tempMin", min: 16, max: 22 },
-            { label: "Maksimum sıcaklık", key: "tempMax", min: 22, max: 30 },
-          ].map(field => (
-            <div key={field.key} style={{ marginBottom: "1.25rem", padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 9, border: "0.5px solid rgba(255,255,255,0.07)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".7rem" }}>
-                <span style={{ fontSize: 13, color: "rgba(240,244,248,0.75)", fontWeight: 500 }}>{field.label}</span>
-                <span style={{ fontSize: 17, fontWeight: 700, color: "#FAC775", fontFamily: "'DM Serif Display', serif" }}>{formData[field.key]} °C</span>
-              </div>
-              <input
-                type="range" min={field.min} max={field.max} value={formData[field.key]}
-                onChange={e => {
-                  const val = parseInt(e.target.value);
-                  if (field.key === "tempMin" && val >= formData.tempMax) return;
-                  if (field.key === "tempMax" && val <= formData.tempMin) return;
-                  updateForm({ [field.key]: val });
-                }}
-                style={{ width: "100%", accentColor: "#1D9E75", cursor: "pointer" }}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(240,244,248,0.3)", marginTop: 4 }}>
-                <span>{field.min} °C</span><span>{field.max} °C</span>
-              </div>
-            </div>
-          ))}
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "1.25rem" }}>
+            {fields.map(field => {
+              const warning = getTempWarning(field.key, formData[field.key], formData);
+              return (
+                <div key={field.key} style={{
+                  padding: "12px 14px",
+                  background: "rgba(255,255,255,0.03)",
+                  borderRadius: 10,
+                  border: warning ? "0.5px solid rgba(239,159,39,0.4)" : "0.5px solid rgba(255,255,255,0.08)",
+                  transition: "border .2s"
+                }}>
+                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.45)", marginBottom: 8, display: "flex", alignItems: "center", gap: 5 }}>
+                    <span>{field.icon}</span>
+                    <span style={{ textTransform: "uppercase", letterSpacing: ".06em", fontWeight: 500 }}>{field.label}</span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, fontWeight: 700, color: warning ? "#EF9F27" : "#FAC775", transition: "color .2s" }}>
+                      {formData[field.key]}°C
+                    </span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <button
+                        onClick={() => {
+                          const val = formData[field.key] + 1;
+                          if (field.key === "tempMin" && val >= formData.tempMax) return;
+                          if (field.key === "tempMax" && val > 30) return;
+                          updateForm({ [field.key]: val });
+                        }}
+                        style={{ width: 28, height: 22, borderRadius: 5, border: "0.5px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", color: "#f0f4f8", cursor: "pointer", fontSize: 13, lineHeight: 1 }}>▲</button>
+                      <button
+                        onClick={() => {
+                          const val = formData[field.key] - 1;
+                          if (field.key === "tempMax" && val <= formData.tempMin) return;
+                          if (field.key === "tempMin" && val < 16) return;
+                          updateForm({ [field.key]: val });
+                        }}
+                        style={{ width: 28, height: 22, borderRadius: 5, border: "0.5px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", color: "#f0f4f8", cursor: "pointer", fontSize: 13, lineHeight: 1 }}>▼</button>
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: 10, color: "rgba(240,244,248,0.25)", marginTop: 6 }}>
+                    16°C – 30°C arası
+                  </div>
+
+                  {warning && (
+                    <div style={{
+                      marginTop: 8,
+                      padding: "5px 8px",
+                      background: "rgba(239,159,39,0.1)",
+                      border: "0.5px solid rgba(239,159,39,0.35)",
+                      borderRadius: 6,
+                      fontSize: 10,
+                      color: "#EF9F27",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                    }}>
+                      <span>⚠</span>
+                      <span>{warning}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: ".85rem 1rem", background: "rgba(250,199,117,0.07)", border: "0.5px solid rgba(250,199,117,0.25)", borderRadius: 9, marginTop: ".5rem" }}>
             <span style={{ fontSize: 12, color: "rgba(240,244,248,0.45)", whiteSpace: "nowrap" }}>16°C</span>
@@ -71,7 +138,6 @@ export default function ComfortPrefs({ goTo, formData, updateForm }) {
             </span>
           </div>
         </div>
-
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1.25rem" }}>
           <button onClick={() => goTo("devices")} style={{ background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.7)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
