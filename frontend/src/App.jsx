@@ -20,7 +20,10 @@ const DEFAULT_FORM = {
   tempMax: 24,
   lightingEnabled: true,
   mode: "balanced",
-  devices: [],
+  devices: [
+    { name: "HVAC", apiName: "HVAC", type: "continuous", power: 2.5 },
+    { name: "Aydınlatma", apiName: "Lighting", type: "continuous", power: 0.2 },
+  ],
 };
 
 function App() {
