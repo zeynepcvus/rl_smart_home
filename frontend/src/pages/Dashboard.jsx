@@ -1,10 +1,10 @@
-const priceColor = (p) => p <= 1.0 ? "rgba(29,158,117,0.6)" : p <= 1.8 ? "rgba(250,199,117,0.6)" : "rgba(226,75,74,0.6)";
+const priceColor = (p) => p <= 1.0 ? "rgba(29,158,117,0.85)" : p <= 1.8 ? "rgba(250,199,117,0.85)" : "rgba(226,75,74,0.85)";
 
 export default function Dashboard({ goTo, formData, apiResult }) {
   const hours = apiResult?.rl?.hours || [];
   const summary = apiResult?.rl?.summary || {};
   const lastHour = hours[hours.length - 1] || {};
-  const currentHour = hours.length;
+
 
   const hourlyPrices = hours.map(h => h.price);
   const hourlyCosts = hours.map(h => h.step_cost);
@@ -36,16 +36,19 @@ export default function Dashboard({ goTo, formData, apiResult }) {
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', sans-serif" }}>
       <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(rgba(29,158,117,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(29,158,117,0.04) 1px, transparent 1px)", backgroundSize: "40px 40px", pointerEvents: "none" }} />
 
-      <div style={{ display: "flex", alignItems: "center", padding: ".85rem 1.5rem", borderBottom: "0.5px solid rgba(255,255,255,0.07)", position: "relative", zIndex: 1, gap: "1rem" }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 14, color: "#5DCAA5", display: "flex", alignItems: "center", gap: 6, marginRight: "auto" }}>
+      <div style={{ display: "flex", alignItems: "center", padding: ".85rem 1.5rem", borderBottom: "0.5px solid rgba(255,255,255,0.07)", position: "relative", zIndex: 1 }}>
+        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 14, color: "#5DCAA5", display: "flex", alignItems: "center", gap: 6, width: 160, flexShrink: 0 }}>
           <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#1D9E75", animation: "blink 2s ease infinite" }} />
           SmartHome RL
         </div>
-        <span style={{ fontSize: 11, color: "#5DCAA5", padding: "3px 10px", borderRadius: 6, background: "rgba(29,158,117,0.12)", fontWeight: 500 }}>{mode.icon} {mode.label}</span>
-        <span style={{ fontSize: 12, color: "#5DCAA5", padding: "5px 12px", borderRadius: 6, background: "rgba(29,158,117,0.12)", fontWeight: 500 }}>Dashboard</span>
-        <span onClick={() => goTo("comparison")} style={{ fontSize: 12, color: "rgba(240,244,248,0.4)", padding: "5px 12px", borderRadius: 6, cursor: "pointer" }}>Karşılaştırma</span>
-        <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.25)", padding: "5px 12px", borderRadius: 6, cursor: "pointer", borderLeft: "0.5px solid rgba(255,255,255,0.07)", marginLeft: 4 }}>Yeniden Başla</span>
-        <span style={{ fontSize: 12, color: "rgba(240,244,248,0.35)", marginLeft: "auto" }}>{apiResult ? `Simülasyon tamamlandı · ${currentHour} saat` : "Veri bekleniyor..."}</span>
+        <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 4 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#f0f4f8", padding: "6px 16px", borderRadius: 8, background: "rgba(29,158,117,0.15)", border: "0.5px solid rgba(29,158,117,0.4)" }}>Dashboard</span>
+          <span onClick={() => goTo("comparison")} style={{ fontSize: 13, color: "rgba(240,244,248,0.45)", padding: "6px 16px", borderRadius: 8, cursor: "pointer", border: "0.5px solid transparent" }}>Karşılaştırma</span>
+        </div>
+        <div style={{ width: 160, flexShrink: 0, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 11, color: "#5DCAA5", padding: "3px 10px", borderRadius: 6, background: "rgba(29,158,117,0.1)", fontWeight: 500 }}>{mode.icon} {mode.label}</span>
+          <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.3)", cursor: "pointer", padding: "5px 8px", borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.08)" }}>↩ Başa dön</span>
+        </div>
       </div>
 
       <div style={{ flex: 1, padding: "1.25rem 1.5rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -57,23 +60,36 @@ export default function Dashboard({ goTo, formData, apiResult }) {
 
         {apiResult && <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-            {[
-              { label: "Günlük maliyet", val: `${totalCost} TL`, color: "#5DCAA5", sub: "24 saat tamamlandı" },
-              { label: "Konfor ihlali", val: comfortViolations, color: comfortViolations > 3 ? "#FAC775" : "#5DCAA5", sub: "Bugün toplam" },
-              { label: "Deadline ihlali", val: summary.deadline_violations ?? 0, color: "#5DCAA5", sub: "Bugün toplam" },
-              { label: "HVAC anahtarı", val: summary.hvac_switches ?? 0, color: "#f0f4f8", sub: "Aç/kapat sayısı" },
-            ].map(m => (
-              <div key={m.label} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".75rem 1rem" }}>
-                <div style={{ fontSize: 10, color: "rgba(240,244,248,0.35)", letterSpacing: ".05em", textTransform: "uppercase", marginBottom: 4 }}>{m.label}</div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: m.color }}>{m.val}</div>
-                <div style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", marginTop: 2 }}>{m.sub}</div>
-              </div>
-            ))}
+            {(() => {
+              const dl = summary.deadline_violations ?? 0;
+              const hvac = summary.hvac_switches ?? 0;
+              const comfortAccent = comfortViolations === 0 ? "#1D9E75" : comfortViolations <= 3 ? "#FAC775" : "#e24b4a";
+              const deadlineAccent = dl === 0 ? "#1D9E75" : dl <= 2 ? "#FAC775" : "#e24b4a";
+              return [
+                { label: "Günlük maliyet", val: `${totalCost} TL`, color: "#5DCAA5", accent: "#1D9E75", sub: "24 saat tamamlandı" },
+                { label: "Konfor ihlali", val: comfortViolations, color: comfortAccent, accent: comfortAccent, sub: "Bugün toplam" },
+                { label: "Deadline ihlali", val: dl, color: deadlineAccent, accent: deadlineAccent, sub: "Bugün toplam" },
+                { label: "HVAC anahtarı", val: hvac, color: "#85B7EB", accent: "#85B7EB", sub: "Aç/kapat sayısı" },
+              ].map(m => (
+                <div key={m.label} style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "0.5px solid rgba(255,255,255,0.08)",
+                  borderLeft: `3px solid ${m.accent}`,
+                  borderRadius: 10,
+                  padding: ".75rem 1rem",
+                  boxShadow: `inset 0 0 20px rgba(0,0,0,0.1)`,
+                }}>
+                  <div style={{ fontSize: 10, color: "rgba(240,244,248,0.35)", letterSpacing: ".05em", textTransform: "uppercase", marginBottom: 4 }}>{m.label}</div>
+                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: m.color }}>{m.val}</div>
+                  <div style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", marginTop: 2 }}>{m.sub}</div>
+                </div>
+              ));
+            })()}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Saat {lastHour.hour ?? 23} · Cihaz Durumları</div>
+              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Simülasyon Sonu · Cihaz Durumları</div>
               {allDeviceEntries.map(entry => {
                 const isActive = activeDevices.includes(entry.api);
                 return (
@@ -101,7 +117,17 @@ export default function Dashboard({ goTo, formData, apiResult }) {
             </div>
 
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Elektrik fiyatı profili</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Elektrik fiyatı profili</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[{ color: "rgba(29,158,117,0.85)", label: "Ucuz" }, { color: "rgba(250,199,117,0.85)", label: "Orta" }, { color: "rgba(226,75,74,0.85)", label: "Pahalı" }].map(l => (
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                      <div style={{ width: 7, height: 7, borderRadius: 2, background: l.color }} />
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.3)" }}>{l.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#FAC775", marginBottom: 2 }}>{currentPrice} TL/kWh</div>
               <div style={{ fontSize: 10, color: "rgba(250,199,117,0.6)", marginBottom: ".6rem" }}>{priceCategory}</div>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 52, marginBottom: 3 }}>
@@ -117,7 +143,17 @@ export default function Dashboard({ goTo, formData, apiResult }) {
 
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Saatlik maliyet</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Saatlik maliyet</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[{ color: "rgba(29,158,117,0.85)", label: "Ucuz" }, { color: "rgba(250,199,117,0.85)", label: "Orta" }, { color: "rgba(226,75,74,0.85)", label: "Pahalı" }].map(l => (
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                      <div style={{ width: 7, height: 7, borderRadius: 2, background: l.color }} />
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.3)" }}>{l.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 80 }}>
                 {hourlyCosts.map((c, i) => (
                   <div key={i} style={{ flex: 1, borderRadius: "2px 2px 0 0", background: priceColor(hourlyPrices[i]), height: `${Math.max((c / maxCost) * 100, 5)}%` }} />

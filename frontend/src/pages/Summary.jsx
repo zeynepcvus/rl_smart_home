@@ -15,7 +15,7 @@ const MODE_LABELS = {
   comfort: { label: "Konfor Odaklı", icon: "🌡️", color: "#FAC775" },
 };
 
-export default function Summary({ goTo, formData, setApiResult }) {
+export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -31,13 +31,15 @@ export default function Summary({ goTo, formData, setApiResult }) {
     setLoading(true);
     setError(null);
     try {
-      const devices = formData.devices.map(d => ({
-        name: d.apiName ?? d.name,
-        preset: d.apiName != null,
-        power_kw: d.power ?? null,
-        duration: d.duration !== "" ? d.duration : null,
-        deadline: d.deadline !== "" ? d.deadline : null,
-      }));
+      const devices = formData.devices
+        .filter(d => d.activeToday !== false && d.apiName !== "HVAC" && d.apiName !== "Lighting")
+        .map(d => ({
+          name: d.apiName ?? d.name,
+          preset: d.apiName != null,
+          power_kw: d.power ?? null,
+          duration: d.duration !== "" ? d.duration : null,
+          deadline: d.deadline !== "" ? d.deadline : null,
+        }));
 
       const res = await fetch("http://localhost:8000/run", {
         method: "POST",
@@ -56,6 +58,7 @@ export default function Summary({ goTo, formData, setApiResult }) {
       if (!res.ok) throw new Error("API hatası: " + res.status);
       const data = await res.json();
       setApiResult(data);
+      saveProfile();
       goTo("dashboard");
     } catch (err) {
       setError("Sunucuya bağlanılamadı. API çalışıyor mu?");
@@ -87,9 +90,9 @@ export default function Summary({ goTo, formData, setApiResult }) {
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: "1rem" }}>
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: "3px solid #85B7EB", borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>Kullanıcı programı</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: "#85B7EB", letterSpacing: ".07em", textTransform: "uppercase" }}>Kullanıcı programı</span>
               <button onClick={() => goTo("schedule")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
             </div>
             {[
@@ -104,7 +107,7 @@ export default function Summary({ goTo, formData, setApiResult }) {
             ))}
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: "3px solid #1D9E75", borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
               <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>Konfor tercihleri</span>
               <button onClick={() => goTo("comfort")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
@@ -112,7 +115,6 @@ export default function Summary({ goTo, formData, setApiResult }) {
             {[
               { label: "Min sıcaklık", val: `${formData.tempMin} °C` },
               { label: "Max sıcaklık", val: `${formData.tempMax} °C` },
-              { label: "Aydınlatma kontrolü", val: formData.lightingEnabled ? "Aktif" : "Pasif", green: formData.lightingEnabled },
             ].map(row => (
               <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}>
                 <span style={{ fontSize: 12, color: "rgba(240,244,248,0.45)" }}>{row.label}</span>
@@ -121,9 +123,9 @@ export default function Summary({ goTo, formData, setApiResult }) {
             ))}
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: `3px solid ${mode.color}`, borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>Optimizasyon modu</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: mode.color, letterSpacing: ".07em", textTransform: "uppercase" }}>Optimizasyon modu</span>
               <button onClick={() => goTo("mode")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0" }}>
@@ -132,10 +134,10 @@ export default function Summary({ goTo, formData, setApiResult }) {
             </div>
           </div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1rem 1.1rem" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderLeft: "3px solid #c084fc", borderRadius: 12, padding: "1rem 1.1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase" }}>
-                Cihazlar ({formData.devices.length} / 5 slot)
+              <span style={{ fontSize: 11, fontWeight: 500, color: "#c084fc", letterSpacing: ".07em", textTransform: "uppercase" }}>
+                Cihazlar ({formData.devices.filter(d => d.activeToday !== false).length} aktif · {formData.devices.length} kayıtlı)
               </span>
               <button onClick={() => goTo("devices")} style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Düzenle</button>
             </div>
@@ -144,13 +146,17 @@ export default function Summary({ goTo, formData, setApiResult }) {
             ) : formData.devices.map((d, i) => {
               const c = COLORS[i % COLORS.length];
               const initials = d.name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
+              const isActive = d.activeToday !== false;
               return (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: "0.5px solid rgba(255,255,255,0.05)" }}>
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: "0.5px solid rgba(255,255,255,0.05)", opacity: isActive ? 1 : 0.4 }}>
                   <div style={{ width: 24, height: 24, borderRadius: 6, background: c.bg, color: c.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 500, flexShrink: 0 }}>{initials}</div>
                   <span style={{ fontSize: 12, color: "#f0f4f8", flex: 1 }}>{d.name}</span>
-                  <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 4, fontWeight: 500, background: d.type === "shiftable" ? "rgba(55,138,221,0.15)" : "rgba(29,158,117,0.15)", color: d.type === "shiftable" ? "#85B7EB" : "#5DCAA5" }}>
-                    {d.type === "shiftable" ? "Ertelenebilir" : "Sürekli"}
-                  </span>
+                  {!isActive
+                    ? <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 4, background: "rgba(255,255,255,0.07)", color: "rgba(240,244,248,0.4)" }}>Bugün pasif</span>
+                    : <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 4, fontWeight: 500, background: d.type === "shiftable" ? "rgba(55,138,221,0.15)" : "rgba(29,158,117,0.15)", color: d.type === "shiftable" ? "#85B7EB" : "#5DCAA5" }}>
+                        {d.type === "shiftable" ? "Ertelenebilir" : "Sürekli"}
+                      </span>
+                  }
                   <span style={{ fontSize: 11, color: "rgba(240,244,248,0.4)" }}>{d.power} kW</span>
                 </div>
               );
@@ -175,7 +181,7 @@ export default function Summary({ goTo, formData, setApiResult }) {
         </div>
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1rem" }}>
-          <button onClick={() => goTo("devices")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
+          <button onClick={() => goTo(formData.devices.some(d => d.apiName === "HVAC") ? "comfort" : "devices")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
           <button
             onClick={handleStart}
             disabled={loading}

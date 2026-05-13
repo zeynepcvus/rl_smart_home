@@ -36,20 +36,28 @@ export default function UserSchedule({ goTo, formData, updateForm }) {
             Uyku programı
           </div>
           {[
-            { label: "Uyanma saati", key: "awakeStart", options: [5, 6, 7, 8, 9, 10] },
-            { label: "Uyuma saati", key: "sleepStart", options: [21, 22, 23, 24] },
+            { label: "Uyanma saati", key: "awakeStart", options: [5, 6, 7, 8, 9, 10], icon: "☀️" },
+            { label: "Uyuma saati", key: "sleepStart", options: [21, 22, 23, 24], icon: "🌙" },
           ].map(field => (
-            <div key={field.key} style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: ".85rem" }}>
-              <span style={{ fontSize: 13, color: "rgba(240,244,248,0.6)", width: 110, flexShrink: 0 }}>{field.label}</span>
-              <select
-                value={formData[field.key]}
-                onChange={e => updateForm({ [field.key]: parseInt(e.target.value) })}
-                style={{ background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "7px 12px", fontSize: 13, color: "#f0f4f8", fontFamily: "'DM Sans', sans-serif", cursor: "pointer", width: 110 }}
-              >
-                {field.options.map(o => (
-                  <option key={o} value={o}>{String(o).padStart(2, "0")}:00</option>
-                ))}
-              </select>
+            <div key={field.key} style={{ marginBottom: "1.1rem" }}>
+              <div style={{ fontSize: 12, color: "rgba(240,244,248,0.45)", marginBottom: ".5rem" }}>{field.icon} {field.label}</div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {field.options.map(o => {
+                  const selected = formData[field.key] === o;
+                  return (
+                    <button key={o} onClick={() => updateForm({ [field.key]: o })} style={{
+                      padding: "7px 14px", borderRadius: 8, cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 13, fontWeight: selected ? 600 : 400,
+                      background: selected ? "rgba(29,158,117,0.2)" : "rgba(255,255,255,0.04)",
+                      border: selected ? "1px solid #1D9E75" : "0.5px solid rgba(255,255,255,0.1)",
+                      color: selected ? "#5DCAA5" : "rgba(240,244,248,0.45)",
+                      transition: "all .15s",
+                    }}>
+                      {String(o).padStart(2, "0")}:00
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
@@ -64,7 +72,6 @@ export default function UserSchedule({ goTo, formData, updateForm }) {
           <div style={{ display: "flex", gap: 10, marginBottom: "1rem" }}>
             {[
               { val: "home", label: "Evet, gün boyu evdeyim" },
-              { val: "partial", label: "Kısmen — belirli saatlerde yokum" },
               { val: "away", label: "Hayır, gün boyu dışarıdayım" },
             ].map(opt => (
               <button key={opt.val} onClick={() => setOccupancy(opt.val)} style={{

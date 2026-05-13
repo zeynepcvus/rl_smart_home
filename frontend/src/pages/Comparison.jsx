@@ -35,14 +35,18 @@ export default function Comparison({ goTo, formData, apiResult }) {
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', sans-serif" }}>
       <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(rgba(29,158,117,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(29,158,117,0.04) 1px, transparent 1px)", backgroundSize: "40px 40px", pointerEvents: "none" }} />
 
-      <div style={{ display: "flex", alignItems: "center", padding: ".85rem 1.5rem", borderBottom: "0.5px solid rgba(255,255,255,0.07)", position: "relative", zIndex: 1, gap: "1rem" }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 14, color: "#5DCAA5", display: "flex", alignItems: "center", gap: 6, marginRight: "auto" }}>
+      <div style={{ display: "flex", alignItems: "center", padding: ".85rem 1.5rem", borderBottom: "0.5px solid rgba(255,255,255,0.07)", position: "relative", zIndex: 1 }}>
+        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 14, color: "#5DCAA5", display: "flex", alignItems: "center", gap: 6, width: 160, flexShrink: 0 }}>
           <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#1D9E75", animation: "blink 2s ease infinite" }} />
           SmartHome RL
         </div>
-        <span onClick={() => goTo("dashboard")} style={{ fontSize: 12, color: "rgba(240,244,248,0.4)", padding: "5px 12px", borderRadius: 6, cursor: "pointer" }}>Dashboard</span>
-        <span style={{ fontSize: 12, color: "#5DCAA5", padding: "5px 12px", borderRadius: 6, background: "rgba(29,158,117,0.12)", fontWeight: 500 }}>Karşılaştırma</span>
-        <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.25)", padding: "5px 12px", borderRadius: 6, cursor: "pointer", borderLeft: "0.5px solid rgba(255,255,255,0.07)", marginLeft: 4 }}>Yeniden Başla</span>
+        <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 4 }}>
+          <span onClick={() => goTo("dashboard")} style={{ fontSize: 13, color: "rgba(240,244,248,0.45)", padding: "6px 16px", borderRadius: 8, cursor: "pointer", border: "0.5px solid transparent" }}>Dashboard</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "#f0f4f8", padding: "6px 16px", borderRadius: 8, background: "rgba(29,158,117,0.15)", border: "0.5px solid rgba(29,158,117,0.4)" }}>Karşılaştırma</span>
+        </div>
+        <div style={{ width: 160, flexShrink: 0, display: "flex", justifyContent: "flex-end" }}>
+          <span onClick={() => goTo("welcome")} style={{ fontSize: 12, color: "rgba(240,244,248,0.3)", cursor: "pointer", padding: "5px 8px", borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.08)" }}>↩ Başa dön</span>
+        </div>
       </div>
 
       <div style={{ flex: 1, padding: "1.25rem 1.5rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
@@ -123,26 +127,57 @@ export default function Comparison({ goTo, formData, apiResult }) {
           {/* Alt satır */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Görsel karşılaştırma</div>
-              {[
-                { label: "Maliyet (TL)", rlV: RL.cost, rbV: RB.cost },
-                { label: "Konfor ihlali", rlV: RL.comfort, rbV: RB.comfort },
-                { label: "HVAC anahtarı", rlV: RL.hvac, rbV: RB.hvac },
-              ].map(b => {
-                const mx = maxVal(b.rlV, b.rbV);
-                return (
-                  <div key={b.label} style={{ marginBottom: 8 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                      <span style={{ fontSize: 11, color: "rgba(240,244,248,0.45)" }}>{b.label}</span>
-                      <span style={{ fontSize: 10, color: "rgba(240,244,248,0.3)" }}>{b.rlV} vs {b.rbV}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Görsel karşılaştırma</div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {[{ color: "#1D9E75", label: "RL" }, { color: "#85B7EB", label: "Kural" }].map(l => (
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: 2, background: l.color }} />
+                      <span style={{ fontSize: 10, color: "rgba(240,244,248,0.35)" }}>{l.label}</span>
                     </div>
-                    <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden", display: "flex", gap: 2 }}>
-                      <div style={{ height: "100%", width: `${(b.rlV / mx) * 50}%`, background: "#1D9E75", borderRadius: 3 }} />
-                      <div style={{ height: "100%", width: `${(b.rbV / mx) * 50}%`, background: "rgba(240,244,248,0.2)", borderRadius: 3 }} />
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "flex-end", height: 155 }}>
+                {[
+                  { label: "Maliyet (TL)", rlV: RL.cost, rbV: RB.cost },
+                  { label: "Konfor ihlali", rlV: RL.comfort, rbV: RB.comfort },
+                  { label: "HVAC anahtarı", rlV: RL.hvac, rbV: RB.hvac },
+                ].map(b => {
+                  const mx = maxVal(b.rlV, b.rbV);
+                  const rlH = Math.round((b.rlV / mx) * 90);
+                  const rbH = Math.round((b.rbV / mx) * 90);
+                  const rlBetter = b.rlV <= b.rbV;
+                  const diff = pct(b.rlV, b.rbV);
+                  const diffLabel = b.rlV === b.rbV ? "Eşit" : rlBetter ? `-${fmtPct(diff)}%` : `+${fmtPct(diff)}%`;
+                  const diffColor = b.rlV === b.rbV ? "rgba(240,244,248,0.3)" : rlBetter ? "#5DCAA5" : "#e24b4a";
+                  return (
+                    <div key={b.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
+                      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 110 }}>
+                        {[
+                          { h: rlH, val: b.rlV, color: "#1D9E75", textColor: "#5DCAA5", better: rlBetter },
+                          { h: rbH, val: b.rbV, color: "#85B7EB", textColor: "#85B7EB", better: !rlBetter },
+                        ].map((bar, bi) => (
+                          <div key={bi} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
+                            <span style={{ fontSize: 10, color: bar.textColor, fontWeight: 500, marginBottom: 3 }}>{bar.val}</span>
+                            <div style={{
+                              width: 28, height: bar.h,
+                              background: bar.color,
+                              borderRadius: "3px 3px 0 0",
+                              transition: "height .4s ease",
+                              opacity: bar.better ? 1 : 0.55,
+                              boxShadow: bar.better ? `0 0 10px ${bar.color}66` : "none"
+                            }} />
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ width: "100%", height: 1, background: "rgba(255,255,255,0.08)" }} />
+                      <span style={{ fontSize: 10, color: diffColor, fontWeight: 600, marginTop: 5 }}>{diffLabel}</span>
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.25)", textAlign: "center", marginTop: 2, lineHeight: 1.3 }}>{b.label}</span>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
             <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: ".85rem 1rem" }}>

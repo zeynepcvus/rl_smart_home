@@ -2,8 +2,8 @@ const STEPS = [
   { key: "welcome", label: "Hoşgeldiniz" },
   { key: "schedule", label: "Kullanıcı programı" },
   { key: "mode", label: "Optimizasyon modu" },
-  { key: "comfort", label: "Konfor tercihleri" },
   { key: "devices", label: "Cihaz seçimi" },
+  { key: "comfort", label: "Konfor tercihleri" },
   { key: "summary", label: "Özet & onayla" },
 ];
 

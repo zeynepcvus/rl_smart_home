@@ -2,6 +2,8 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
 const PRESETS = [
+  { name: "HVAC", apiName: "HVAC", type: "continuous", power: 2.5, duration: null, deadline: null, comfort: true, lighting: false },
+  { name: "Aydınlatma", apiName: "Lighting", type: "continuous", power: 0.2, duration: null, deadline: null, comfort: false, lighting: true },
   { name: "Çamaşır Makinesi", apiName: "Washing Machine", type: "shiftable", power: 1.5, duration: 2, deadline: 22, comfort: false, lighting: false },
   { name: "Bulaşık Makinesi", apiName: "Dishwasher", type: "shiftable", power: 1.5, duration: 2, deadline: 23, comfort: false, lighting: false },
   { name: "Su Isıtıcı", apiName: "Water Heater", type: "shiftable", power: 1.5, duration: 1, deadline: 22, comfort: false, lighting: false },
@@ -23,8 +25,12 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
   const [devices, setDevices] = useState(formData.devices || []);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [limitMsg, setLimitMsg] = useState(false);
 
-  const openModal = () => { setForm(EMPTY_FORM); setShowModal(true); };
+  const openModal = () => {
+    if (devices.filter(d => d.apiName !== "HVAC" && d.apiName !== "Lighting").length >= 5) { setLimitMsg(true); setTimeout(() => setLimitMsg(false), 2500); return; }
+    setForm(EMPTY_FORM); setShowModal(true);
+  };
   const closeModal = () => setShowModal(false);
   const fillPreset = (p) => setForm({ name: p.name, apiName: p.apiName, type: p.type, power: p.power, duration: p.duration || "", deadline: p.deadline || 22, comfort: p.comfort, lighting: p.lighting });
   const saveDevice = () => {
@@ -34,7 +40,16 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
     closeModal();
   };
   const removeDevice = (idx) => setDevices(devices.filter((_, i) => i !== idx));
-  const handleNext = () => { updateForm({ devices }); goTo("summary"); };
+  const toggleActive = (idx) => setDevices(devices.map((d, i) =>
+    i === idx ? { ...d, activeToday: d.activeToday === false } : d
+  ));
+  const updateDeadline = (idx, val) => setDevices(devices.map((d, i) =>
+    i === idx ? { ...d, deadline: val } : d
+  ));
+  const handleNext = () => {
+    updateForm({ devices });
+    goTo(devices.some(d => d.apiName === "HVAC") ? "comfort" : "summary");
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", fontFamily: "'DM Sans', sans-serif" }}>
@@ -48,32 +63,16 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "84%", background: "#1D9E75", borderRadius: 2 }} />
+          <div style={{ height: "100%", width: "56%", background: "#1D9E75", borderRadius: 2 }} />
         </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
           Evindeki cihazları ekle
         </div>
         <p style={{ fontSize: 13, color: "rgba(240,244,248,0.4)", marginBottom: "1rem", fontWeight: 300 }}>
-          Hangi cihazları kullanmak istiyorsan ekle. Maksimum 5 cihaz.
+          Hangi cihazları kullanmak istiyorsan ekle.
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(29,158,117,0.07)", border: "0.5px solid rgba(29,158,117,0.2)", borderRadius: 8, padding: "8px 12px", marginBottom: "1rem" }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#1D9E75", flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: "rgba(240,244,248,0.5)", lineHeight: 1.5 }}>
-            <span style={{ color: "#5DCAA5", fontWeight: 500 }}>HVAC</span> ve <span style={{ color: "#5DCAA5", fontWeight: 500 }}>Aydınlatma</span> her simülasyona otomatik dahil edilir — ayrıca eklemen gerekmiyor.
-          </span>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: "1rem" }}>
-          <span style={{ fontSize: 12, color: "rgba(240,244,248,0.4)" }}>Eklenen cihaz:</span>
-          <div style={{ display: "flex", gap: 4 }}>
-            {[0,1,2,3,4].map(i => (
-              <div key={i} style={{ width: 24, height: 5, borderRadius: 3, background: i < devices.length ? "#1D9E75" : "rgba(255,255,255,0.08)", transition: "background .2s" }} />
-            ))}
-          </div>
-          <span style={{ fontSize: 12, color: "rgba(240,244,248,0.4)" }}>{devices.length} / 5</span>
-        </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: "1rem", minHeight: 60 }}>
           {devices.length === 0 ? (
@@ -84,29 +83,55 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
           ) : devices.map((d, i) => {
             const c = COLORS[i % COLORS.length];
             const initials = d.name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
-            const meta = `${d.power} kW · ${d.type === "shiftable" ? "ertelenebilir" : "sürekli"}${d.type === "shiftable" ? ` · ${d.duration} saat · deadline ${d.deadline}:00` : ""}`;
+            const isActive = d.activeToday !== false;
             return (
-              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".75rem 1rem", display: "flex", alignItems: "center", gap: 10 }}>
+              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: `0.5px solid ${isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)"}`, borderRadius: 10, padding: ".75rem 1rem", display: "flex", alignItems: "center", gap: 10, opacity: isActive ? 1 : 0.5, transition: "opacity .2s" }}>
                 <div style={{ width: 32, height: 32, borderRadius: 8, background: c.bg, color: c.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{initials}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: "#f0f4f8" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "#f0f4f8", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                     {d.name}
-                    <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, fontWeight: 500, marginLeft: 8, background: d.type === "shiftable" ? "rgba(55,138,221,0.15)" : "rgba(29,158,117,0.15)", color: d.type === "shiftable" ? "#85B7EB" : "#5DCAA5" }}>{d.type === "shiftable" ? "Ertelenebilir" : "Sürekli"}</span>
+                    <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, fontWeight: 500, background: d.type === "shiftable" ? "rgba(55,138,221,0.15)" : "rgba(29,158,117,0.15)", color: d.type === "shiftable" ? "#85B7EB" : "#5DCAA5" }}>{d.type === "shiftable" ? "Ertelenebilir" : "Sürekli"}</span>
+                    {!isActive && <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, background: "rgba(255,255,255,0.07)", color: "rgba(240,244,248,0.4)" }}>Bugün pasif</span>}
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.4)", marginTop: 1 }}>{meta}</div>
+                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.4)", marginTop: 3, display: "flex", alignItems: "center", gap: 5 }}>
+                    <span>{d.power} kW</span>
+                    {d.type === "shiftable" && (
+                      <>
+                        <span>·</span>
+                        <span>{d.duration} saat</span>
+                        <span>·</span>
+                        <span>deadline</span>
+                        <select
+                          value={d.deadline || 22}
+                          onChange={e => updateDeadline(i, parseInt(e.target.value))}
+                          style={{ fontSize: 11, background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.15)", borderRadius: 4, color: "rgba(240,244,248,0.7)", padding: "1px 4px", cursor: "pointer", outline: "none" }}
+                        >
+                          {[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23].map(h => <option key={h} value={h}>{h}:00</option>)}
+                        </select>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <button onClick={() => removeDevice(i)} style={{ width: 24, height: 24, borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(240,244,248,0.35)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>×</button>
+                <div onClick={() => toggleActive(i)} title={isActive ? "Bugün pasif yap" : "Bugün aktif et"} style={{ width: 36, height: 20, borderRadius: 10, cursor: "pointer", background: isActive ? "#1D9E75" : "rgba(255,255,255,0.1)", position: "relative", transition: "background .2s", flexShrink: 0 }}>
+                  <div style={{ position: "absolute", width: 14, height: 14, borderRadius: "50%", background: "#fff", top: 3, left: isActive ? 19 : 3, transition: "left .2s" }} />
+                </div>
+                <button onClick={() => removeDevice(i)} style={{ width: 24, height: 24, borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(240,244,248,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>×</button>
               </div>
             );
           })}
         </div>
 
-        <button onClick={openModal} disabled={devices.length >= 5} style={{ width: "100%", background: "rgba(29,158,117,0.1)", border: "0.5px dashed rgba(29,158,117,0.4)", borderRadius: 10, padding: 10, fontSize: 13, color: "#5DCAA5", fontFamily: "'DM Sans', sans-serif", cursor: devices.length >= 5 ? "not-allowed" : "pointer", opacity: devices.length >= 5 ? .35 : 1, marginBottom: "1rem" }}>
+        <button onClick={openModal} style={{ width: "100%", background: "rgba(29,158,117,0.1)", border: "0.5px dashed rgba(29,158,117,0.4)", borderRadius: 10, padding: 10, fontSize: 13, color: "#5DCAA5", fontFamily: "'DM Sans', sans-serif", cursor: "pointer", marginBottom: limitMsg ? ".4rem" : "1rem" }}>
           + Cihaz Ekle
         </button>
+        {limitMsg && (
+          <div style={{ fontSize: 12, color: "rgba(250,199,117,0.8)", marginBottom: "1rem", textAlign: "center" }}>
+            En fazla 5 cihaz eklenebilir.
+          </div>
+        )}
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1rem" }}>
-          <button onClick={() => goTo("comfort")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
+          <button onClick={() => goTo("mode")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
           <button onClick={handleNext} style={{ background: "#1D9E75", border: "none", borderRadius: 8, padding: "10px 28px", fontSize: 13, fontWeight: 500, color: "#fff", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>Devam Et →</button>
         </div>
       </div>
