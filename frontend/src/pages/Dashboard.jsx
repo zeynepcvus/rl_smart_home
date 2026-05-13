@@ -29,7 +29,9 @@ export default function Dashboard({ goTo, formData, apiResult }) {
   const allDeviceEntries = [
     { display: "HVAC", api: "HVAC" },
     { display: "Lighting", api: "Lighting" },
-    ...(formData?.devices?.map(d => ({ display: d.name, api: d.apiName ?? d.name })) || []),
+    ...(formData?.devices
+      ?.filter(d => d.apiName !== "HVAC" && d.apiName !== "Lighting")
+      ?.map(d => ({ display: d.name, api: d.apiName ?? d.name })) || []),
   ];
 
   return (
