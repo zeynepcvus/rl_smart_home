@@ -118,7 +118,7 @@ export default function OptimizationMode({ goTo, formData, updateForm }) {
         </div>
 
         <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", paddingTop: "1rem" }}>
-          <button onClick={() => goTo("schedule")} style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.45)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
+          <button onClick={() => goTo("schedule")} style={{ background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "10px 20px", fontSize: 13, color: "rgba(240,244,248,0.7)", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>← Geri</button>
           <button onClick={() => goTo("devices")} style={{ background: "#1D9E75", border: "none", borderRadius: 8, padding: "10px 28px", fontSize: 13, fontWeight: 500, color: "#fff", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}>Devam Et →</button>
         </div>
       </div>
