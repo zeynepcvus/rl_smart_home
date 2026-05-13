@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore

@@ -71,7 +71,12 @@ def build_slot_manager(req: RunRequest) -> SlotManager:
     slot_manager.add_device(create_device_from_preset("Lighting"))
     for d in req.devices:
         if d.preset:
-            slot_manager.add_device(create_device_from_preset(d.name))
+            device = create_device_from_preset(d.name)
+            if (d.deadline is not None
+                    and device.device_type == DEVICE_TYPE_SHIFTABLE
+                    and 0 <= d.deadline <= 24):
+                device.deadline = d.deadline
+            slot_manager.add_device(device)
         else:
             slot_manager.add_device(create_custom_device(
                 name=d.name,
