@@ -46,7 +46,10 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
   const updateDeadline = (idx, val) => setDevices(devices.map((d, i) =>
     i === idx ? { ...d, deadline: val } : d
   ));
-  const handleNext = () => { updateForm({ devices }); goTo("comfort"); };
+  const handleNext = () => {
+    updateForm({ devices });
+    goTo(devices.some(d => d.apiName === "HVAC") ? "comfort" : "summary");
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1628", display: "flex", fontFamily: "'DM Sans', sans-serif" }}>
