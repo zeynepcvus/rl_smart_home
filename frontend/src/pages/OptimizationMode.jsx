@@ -51,14 +51,11 @@ export default function OptimizationMode({ goTo, formData, updateForm }) {
       <Sidebar currentStep="mode" />
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "42%", background: "#1D9E75", borderRadius: 2 }} />
-        </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
           Optimizasyon modunu seç
         </div>
-        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.4)", marginBottom: "1.75rem", fontWeight: 300 }}>
+        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.65)", marginBottom: "1.75rem", fontWeight: 300 }}>
           Sistem bu tercihe göre kararlarını optimize eder.
         </p>
 
@@ -68,8 +65,9 @@ export default function OptimizationMode({ goTo, formData, updateForm }) {
               key={mode.key}
               onClick={() => updateForm({ mode: mode.key })}
               style={{
-                background: selected === mode.key ? mode.bg : "rgba(255,255,255,0.02)",
-                border: selected === mode.key ? `1.5px solid ${mode.border}` : "0.5px solid rgba(255,255,255,0.08)",
+                background: selected === mode.key ? mode.bg : "rgba(255,255,255,0.03)",
+                border: selected === mode.key ? `1.5px solid ${mode.border}` : "0.5px solid rgba(255,255,255,0.1)",
+                borderLeft: selected === mode.key ? `3px solid ${mode.color}` : `3px solid rgba(255,255,255,0.08)`,
                 borderRadius: 12, padding: "1.1rem 1.25rem", cursor: "pointer",
                 transition: "all .2s", position: "relative"
               }}
@@ -77,20 +75,20 @@ export default function OptimizationMode({ goTo, formData, updateForm }) {
               {mode.recommended && (
                 <div style={{
                   position: "absolute", top: 12, right: 12, fontSize: 10,
-                  padding: "2px 8px", borderRadius: 20,
-                  background: "rgba(29,158,117,0.2)", color: "#5DCAA5", fontWeight: 500
+                  padding: "2px 10px", borderRadius: 20,
+                  background: "rgba(29,158,117,0.2)", border: "0.5px solid rgba(29,158,117,0.4)", color: "#5DCAA5", fontWeight: 600, letterSpacing: ".04em"
                 }}>Önerilen</div>
               )}
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                <div style={{ fontSize: 28, flexShrink: 0, marginTop: 2 }}>{mode.icon}</div>
+                <div style={{ fontSize: 30, flexShrink: 0, marginTop: 2 }}>{mode.icon}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 500, color: selected === mode.key ? mode.color : "#f0f4f8", marginBottom: 4 }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: selected === mode.key ? mode.color : "#f0f4f8", marginBottom: 4 }}>
                     {mode.title}
                   </div>
-                  <div style={{ fontSize: 13, color: "rgba(240,244,248,0.55)", marginBottom: 8, lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 13, color: "rgba(240,244,248,0.7)", marginBottom: 6, lineHeight: 1.5 }}>
                     {mode.desc}
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.35)", marginBottom: 10 }}>
+                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.45)", marginBottom: 12 }}>
                     {mode.detail}
                   </div>
                   <div style={{ display: "flex", gap: 16 }}>
@@ -99,16 +97,16 @@ export default function OptimizationMode({ goTo, formData, updateForm }) {
                       { label: "Konfor ihlali", val: mode.stats.comfort },
                       { label: "Performans", val: mode.stats.improvement },
                     ].map(s => (
-                      <div key={s.label}>
-                        <div style={{ fontSize: 10, color: "rgba(240,244,248,0.3)", marginBottom: 2 }}>{s.label}</div>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: mode.color }}>{s.val}</div>
+                      <div key={s.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 7, padding: "5px 10px" }}>
+                        <div style={{ fontSize: 10, color: "rgba(240,244,248,0.4)", marginBottom: 3, textTransform: "uppercase", letterSpacing: ".05em" }}>{s.label}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: mode.color }}>{s.val}</div>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div style={{
                   width: 20, height: 20, borderRadius: "50%", flexShrink: 0, marginTop: 2,
-                  border: selected === mode.key ? `2px solid ${mode.color}` : "1.5px solid rgba(255,255,255,0.2)",
+                  border: selected === mode.key ? `2px solid ${mode.color}` : "1.5px solid rgba(255,255,255,0.25)",
                   background: selected === mode.key ? mode.color : "transparent",
                   display: "flex", alignItems: "center", justifyContent: "center"
                 }}>

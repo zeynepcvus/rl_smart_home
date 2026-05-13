@@ -62,70 +62,66 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
       <Sidebar currentStep="devices" />
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "56%", background: "#1D9E75", borderRadius: 2 }} />
-        </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
           Evindeki cihazları ekle
         </div>
-        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.4)", marginBottom: "1rem", fontWeight: 300 }}>
+        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.65)", marginBottom: "1rem", fontWeight: 300 }}>
           Hangi cihazları kullanmak istiyorsan ekle.
         </p>
 
-
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: "1rem", minHeight: 60 }}>
           {devices.length === 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "1.5rem", border: "0.5px dashed rgba(255,255,255,0.12)", borderRadius: 10, gap: 6 }}>
-              <div style={{ fontSize: 24, opacity: .3 }}>○</div>
-              <div style={{ fontSize: 13, color: "rgba(240,244,248,0.3)" }}>Henüz cihaz eklenmedi</div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", border: "0.5px dashed rgba(29,158,117,0.25)", borderRadius: 12, gap: 8 }}>
+              <div style={{ fontSize: 28, opacity: .4 }}>⚡</div>
+              <div style={{ fontSize: 13, color: "rgba(240,244,248,0.4)" }}>Henüz cihaz eklenmedi</div>
             </div>
           ) : devices.map((d, i) => {
             const c = COLORS[i % COLORS.length];
             const initials = d.name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
             const isActive = d.activeToday !== false;
             return (
-              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: `0.5px solid ${isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)"}`, borderRadius: 10, padding: ".75rem 1rem", display: "flex", alignItems: "center", gap: 10, opacity: isActive ? 1 : 0.5, transition: "opacity .2s" }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: c.bg, color: c.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, flexShrink: 0 }}>{initials}</div>
+              <div key={i} style={{ background: isActive ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)", border: `0.5px solid ${isActive ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)"}`, borderLeft: `3px solid ${isActive ? c.color : "rgba(255,255,255,0.1)"}`, borderRadius: 10, padding: ".75rem 1rem", display: "flex", alignItems: "center", gap: 10, opacity: isActive ? 1 : 0.5, transition: "all .2s" }}>
+                <div style={{ width: 34, height: 34, borderRadius: 9, background: c.bg, color: c.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, flexShrink: 0 }}>{initials}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 500, color: "#f0f4f8", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                     {d.name}
-                    <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, fontWeight: 500, background: d.type === "shiftable" ? "rgba(55,138,221,0.15)" : "rgba(29,158,117,0.15)", color: d.type === "shiftable" ? "#85B7EB" : "#5DCAA5" }}>{d.type === "shiftable" ? "Ertelenebilir" : "Sürekli"}</span>
-                    {!isActive && <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, background: "rgba(255,255,255,0.07)", color: "rgba(240,244,248,0.4)" }}>Bugün pasif</span>}
+                    <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, fontWeight: 600, background: d.type === "shiftable" ? "rgba(55,138,221,0.18)" : "rgba(29,158,117,0.18)", color: d.type === "shiftable" ? "#85B7EB" : "#5DCAA5" }}>{d.type === "shiftable" ? "Ertelenebilir" : "Sürekli"}</span>
+                    {!isActive && <span style={{ fontSize: 10, padding: "2px 7px", borderRadius: 4, background: "rgba(255,255,255,0.07)", color: "rgba(240,244,248,0.45)" }}>Bugün pasif</span>}
                   </div>
-                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.4)", marginTop: 3, display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ fontSize: 11, color: "rgba(240,244,248,0.5)", marginTop: 3, display: "flex", alignItems: "center", gap: 5 }}>
                     <span>{d.power} kW</span>
                     {d.type === "shiftable" && (
                       <>
                         <span>·</span>
                         <span>{d.duration} saat</span>
                         <span>·</span>
-                        <span>deadline</span>
+                        <span style={{ color: "rgba(240,244,248,0.4)" }}>deadline</span>
                         <select
                           value={d.deadline || 22}
                           onChange={e => updateDeadline(i, parseInt(e.target.value))}
-                          style={{ fontSize: 11, background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.15)", borderRadius: 4, color: "rgba(240,244,248,0.7)", padding: "1px 4px", cursor: "pointer", outline: "none" }}
+                          style={{ fontSize: 11, background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.15)", borderRadius: 4, color: "#f0f4f8", padding: "1px 4px", cursor: "pointer", outline: "none" }}
                         >
-                          {[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23].map(h => <option key={h} value={h}>{h}:00</option>)}
+                          {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{String(h).padStart(2,"0")}:00</option>)}
                         </select>
                       </>
                     )}
                   </div>
                 </div>
-                <div onClick={() => toggleActive(i)} title={isActive ? "Bugün pasif yap" : "Bugün aktif et"} style={{ width: 36, height: 20, borderRadius: 10, cursor: "pointer", background: isActive ? "#1D9E75" : "rgba(255,255,255,0.1)", position: "relative", transition: "background .2s", flexShrink: 0 }}>
-                  <div style={{ position: "absolute", width: 14, height: 14, borderRadius: "50%", background: "#fff", top: 3, left: isActive ? 19 : 3, transition: "left .2s" }} />
+                <div onClick={() => toggleActive(i)} title={isActive ? "Bugün pasif yap" : "Bugün aktif et"} style={{ width: 36, height: 20, borderRadius: 10, cursor: "pointer", background: isActive ? "#1D9E75" : "rgba(255,255,255,0.12)", position: "relative", transition: "background .2s", flexShrink: 0 }}>
+                  <div style={{ position: "absolute", width: 14, height: 14, borderRadius: "50%", background: "#fff", top: 3, left: isActive ? 19 : 3, transition: "left .2s", boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }} />
                 </div>
-                <button onClick={() => removeDevice(i)} style={{ width: 24, height: 24, borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(240,244,248,0.3)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>×</button>
+                <button onClick={() => removeDevice(i)} style={{ width: 26, height: 26, borderRadius: 6, border: "0.5px solid rgba(255,255,255,0.12)", background: "rgba(226,75,74,0.08)", color: "rgba(226,75,74,0.6)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>×</button>
               </div>
             );
           })}
         </div>
 
-        <button onClick={openModal} style={{ width: "100%", background: "rgba(29,158,117,0.1)", border: "0.5px dashed rgba(29,158,117,0.4)", borderRadius: 10, padding: 10, fontSize: 13, color: "#5DCAA5", fontFamily: "'DM Sans', sans-serif", cursor: "pointer", marginBottom: limitMsg ? ".4rem" : "1rem" }}>
+        <button onClick={openModal} style={{ width: "100%", background: "rgba(29,158,117,0.1)", border: "1px dashed rgba(29,158,117,0.5)", borderRadius: 10, padding: 11, fontSize: 13, fontWeight: 500, color: "#5DCAA5", fontFamily: "'DM Sans', sans-serif", cursor: "pointer", marginBottom: limitMsg ? ".4rem" : "1rem" }}>
           + Cihaz Ekle
         </button>
         {limitMsg && (
-          <div style={{ fontSize: 12, color: "rgba(250,199,117,0.8)", marginBottom: "1rem", textAlign: "center" }}>
+          <div style={{ fontSize: 12, color: "#FAC775", background: "rgba(250,199,117,0.08)", border: "0.5px solid rgba(250,199,117,0.25)", borderRadius: 8, padding: "7px 12px", marginBottom: "1rem", textAlign: "center" }}>
             En fazla 5 cihaz eklenebilir.
           </div>
         )}
@@ -138,14 +134,14 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
 
       {showModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-          <div style={{ background: "#0f1e35", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 14, padding: "1.5rem", width: 340, maxWidth: "90vw" }}>
+          <div style={{ background: "#0f1e35", border: "0.5px solid rgba(255,255,255,0.14)", borderTop: "2px solid #1D9E75", borderRadius: 14, padding: "1.5rem", width: 340, maxWidth: "90vw" }}>
             <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: "#f0f4f8", marginBottom: "1.25rem" }}>Cihaz Ekle</div>
 
             <div style={{ marginBottom: ".75rem" }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: "rgba(240,244,248,0.5)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 5 }}>Hazır şablondan seç</div>
+              <div style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 6 }}>Hazır şablondan seç</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                 {PRESETS.map(p => (
-                  <button key={p.name} onClick={() => fillPreset(p)} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "rgba(240,244,248,0.5)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{p.name}</button>
+                  <button key={p.name} onClick={() => fillPreset(p)} style={{ fontSize: 11, padding: "4px 11px", borderRadius: 20, border: "0.5px solid rgba(29,158,117,0.3)", background: "rgba(29,158,117,0.07)", color: "rgba(240,244,248,0.7)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>{p.name}</button>
                 ))}
               </div>
             </div>
@@ -183,7 +179,7 @@ export default function DeviceSetup({ goTo, formData, updateForm }) {
                   <label style={{ fontSize: 11, fontWeight: 500, color: "rgba(240,244,248,0.5)", letterSpacing: ".06em", textTransform: "uppercase", display: "block", marginBottom: 5 }}>Deadline</label>
                   <select value={form.deadline} onChange={e => setForm({ ...form, deadline: parseInt(e.target.value) })}
                     style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#f0f4f8", fontFamily: "'DM Sans', sans-serif" }}>
-                    {[18,19,20,21,22,23].map(h => <option key={h} value={h}>{h}:00</option>)}
+                    {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{String(h).padStart(2,"0")}:00</option>)}
                   </select>
                 </div>
               </div>

@@ -78,9 +78,6 @@ export default function Summary({ goTo, formData, setApiResult, saveProfile }) {
       <Sidebar currentStep="summary" />
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "100%", background: "#1D9E75", borderRadius: 2 }} />
-        </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
           Her şey doğru mu?

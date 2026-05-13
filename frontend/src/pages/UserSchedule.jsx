@@ -20,53 +20,43 @@ export default function UserSchedule({ goTo, formData, updateForm }) {
       <Sidebar currentStep="schedule" />
 
       <div style={{ flex: 1, padding: "2rem", position: "relative", zIndex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ height: 2, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginBottom: "2rem", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: "28%", background: "#1D9E75", borderRadius: 2 }} />
-        </div>
 
         <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#f0f4f8", marginBottom: ".35rem" }}>
           Günlük programın nedir?
         </div>
-        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.4)", marginBottom: "1.75rem", fontWeight: 300 }}>
+        <p style={{ fontSize: 13, color: "rgba(240,244,248,0.65)", marginBottom: "1.75rem", fontWeight: 300 }}>
           Sistem, uyanma ve uyuma saatlerine göre cihaz kararlarını optimize eder.
         </p>
 
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" }}>
-          <div style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase", marginBottom: "1rem" }}>
+        <div style={{ background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)", borderLeft: "3px solid #1D9E75", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase", marginBottom: "1.1rem" }}>
             Uyku programı
           </div>
           {[
-            { label: "Uyanma saati", key: "awakeStart", options: [5, 6, 7, 8, 9, 10], icon: "☀️" },
-            { label: "Uyuma saati", key: "sleepStart", options: [21, 22, 23, 24], icon: "🌙" },
+            { label: "Uyanma saati", key: "awakeStart", icon: "☀️" },
+            { label: "Uyuma saati", key: "sleepStart", icon: "🌙" },
           ].map(field => (
-            <div key={field.key} style={{ marginBottom: "1.1rem" }}>
-              <div style={{ fontSize: 12, color: "rgba(240,244,248,0.45)", marginBottom: ".5rem" }}>{field.icon} {field.label}</div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {field.options.map(o => {
-                  const selected = formData[field.key] === o;
-                  return (
-                    <button key={o} onClick={() => updateForm({ [field.key]: o })} style={{
-                      padding: "7px 14px", borderRadius: 8, cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 13, fontWeight: selected ? 600 : 400,
-                      background: selected ? "rgba(29,158,117,0.2)" : "rgba(255,255,255,0.04)",
-                      border: selected ? "1px solid #1D9E75" : "0.5px solid rgba(255,255,255,0.1)",
-                      color: selected ? "#5DCAA5" : "rgba(240,244,248,0.45)",
-                      transition: "all .15s",
-                    }}>
-                      {String(o).padStart(2, "0")}:00
-                    </button>
-                  );
-                })}
-              </div>
+            <div key={field.key} style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: "1rem", padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.07)" }}>
+              <span style={{ fontSize: 18 }}>{field.icon}</span>
+              <span style={{ fontSize: 14, color: "#f0f4f8", fontWeight: 500, flex: 1 }}>{field.label}</span>
+              <select
+                value={formData[field.key]}
+                onChange={e => updateForm({ [field.key]: parseInt(e.target.value) })}
+                style={{ background: "rgba(29,158,117,0.1)", border: "0.5px solid rgba(29,158,117,0.35)", borderRadius: 7, padding: "7px 14px", fontSize: 14, fontWeight: 600, color: "#5DCAA5", fontFamily: "'DM Sans', sans-serif", cursor: "pointer" }}
+              >
+                {Array.from({ length: 24 }, (_, h) => (
+                  <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>
+                ))}
+              </select>
             </div>
           ))}
         </div>
 
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" }}>
-          <div style={{ fontSize: 11, fontWeight: 500, color: "#5DCAA5", letterSpacing: ".07em", textTransform: "uppercase", marginBottom: "1rem" }}>
+        <div style={{ background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.1)", borderLeft: "3px solid #85B7EB", borderRadius: 12, padding: "1.25rem", marginBottom: "1rem" }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: "#85B7EB", letterSpacing: ".07em", textTransform: "uppercase", marginBottom: "1rem" }}>
             Evde bulunma durumu
           </div>
-          <div style={{ fontSize: 14, color: "#f0f4f8", marginBottom: "1rem" }}>
+          <div style={{ fontSize: 14, color: "rgba(240,244,248,0.75)", marginBottom: "1rem" }}>
             Bugün gün içinde evde olacak mısınız?
           </div>
           <div style={{ display: "flex", gap: 10, marginBottom: "1rem" }}>
@@ -75,11 +65,11 @@ export default function UserSchedule({ goTo, formData, updateForm }) {
               { val: "away", label: "Hayır, gün boyu dışarıdayım" },
             ].map(opt => (
               <button key={opt.val} onClick={() => setOccupancy(opt.val)} style={{
-                flex: 1, padding: 10, borderRadius: 8, cursor: "pointer",
+                flex: 1, padding: 11, borderRadius: 8, cursor: "pointer",
                 fontFamily: "'DM Sans', sans-serif", fontSize: 13, textAlign: "center",
-                background: occupancy === opt.val ? "rgba(29,158,117,0.12)" : "transparent",
+                background: occupancy === opt.val ? "rgba(29,158,117,0.12)" : "rgba(255,255,255,0.03)",
                 border: occupancy === opt.val ? "0.5px solid #1D9E75" : "0.5px solid rgba(255,255,255,0.1)",
-                color: occupancy === opt.val ? "#5DCAA5" : "rgba(240,244,248,0.5)",
+                color: occupancy === opt.val ? "#5DCAA5" : "rgba(240,244,248,0.6)",
                 fontWeight: occupancy === opt.val ? 500 : 400, transition: "all .2s"
               }}>{opt.label}</button>
             ))}
