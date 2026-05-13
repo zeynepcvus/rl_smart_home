@@ -1,4 +1,4 @@
-const priceColor = (p) => p <= 1.0 ? "rgba(29,158,117,0.6)" : p <= 1.8 ? "rgba(250,199,117,0.6)" : "rgba(226,75,74,0.6)";
+const priceColor = (p) => p <= 1.0 ? "rgba(29,158,117,0.85)" : p <= 1.8 ? "rgba(250,199,117,0.85)" : "rgba(226,75,74,0.85)";
 
 export default function Dashboard({ goTo, formData, apiResult }) {
   const hours = apiResult?.rl?.hours || [];
@@ -104,7 +104,17 @@ export default function Dashboard({ goTo, formData, apiResult }) {
             </div>
 
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Elektrik fiyatı profili</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Elektrik fiyatı profili</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[{ color: "rgba(29,158,117,0.85)", label: "Ucuz" }, { color: "rgba(250,199,117,0.85)", label: "Orta" }, { color: "rgba(226,75,74,0.85)", label: "Pahalı" }].map(l => (
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                      <div style={{ width: 7, height: 7, borderRadius: 2, background: l.color }} />
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.3)" }}>{l.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: "#FAC775", marginBottom: 2 }}>{currentPrice} TL/kWh</div>
               <div style={{ fontSize: 10, color: "rgba(250,199,117,0.6)", marginBottom: ".6rem" }}>{priceCategory}</div>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 52, marginBottom: 3 }}>
@@ -120,7 +130,17 @@ export default function Dashboard({ goTo, formData, apiResult }) {
 
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: ".85rem 1rem" }}>
-              <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: ".75rem" }}>Saatlik maliyet</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".75rem" }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "rgba(240,244,248,0.35)", letterSpacing: ".06em", textTransform: "uppercase" }}>Saatlik maliyet</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[{ color: "rgba(29,158,117,0.85)", label: "Ucuz" }, { color: "rgba(250,199,117,0.85)", label: "Orta" }, { color: "rgba(226,75,74,0.85)", label: "Pahalı" }].map(l => (
+                    <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                      <div style={{ width: 7, height: 7, borderRadius: 2, background: l.color }} />
+                      <span style={{ fontSize: 9, color: "rgba(240,244,248,0.3)" }}>{l.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 80 }}>
                 {hourlyCosts.map((c, i) => (
                   <div key={i} style={{ flex: 1, borderRadius: "2px 2px 0 0", background: priceColor(hourlyPrices[i]), height: `${Math.max((c / maxCost) * 100, 5)}%` }} />
